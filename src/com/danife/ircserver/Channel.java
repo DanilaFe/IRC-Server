@@ -80,6 +80,12 @@ public class Channel {
 		
 		return false;
 	}
+	
+	public void sendChannelMSG(String s){
+		for(Client c: usershere){
+			c.sendMessage(s); //TODO make this correct protocol.
+		}
+	}
 			
 
 }

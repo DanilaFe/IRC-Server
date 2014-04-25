@@ -96,6 +96,7 @@ public class Startup {
 					client.ping();
 				} else {
 					client.sendMessage("Nick taken."); //TODO Make this a proper nice message XD
+					System.out.println("Client attempted to connect with taken username. Client username: " + pieces[1]);
 				}
 				
 				
@@ -107,13 +108,16 @@ public class Startup {
 			break;
 		case "NICK":
 			if(pieces.length > 1){
-				
-				if(this.checkForSimilarName(pieces[1])){
-					String s = "Client " + client.getName() + " changed name to ";
-					client.setName(pieces[1]);
-					System.out.println(s + client.getName());
-				} else {
-					client.sendMessage("Nick taken."); //TODO Make this a proper nice message XD
+				if(!(pieces[1].equalsIgnoreCase(client.getName()))){
+					if(this.checkForSimilarName(pieces[1])){
+						String s = "Client " + client.getName() + " changed name to ";
+						client.setName(pieces[1]);
+						System.out.println(s + client.getName());
+					} else {
+						client.sendMessage("Nick taken."); //TODO Make this a proper nice message XD
+						System.out.println("Client attempted to connect with taken username. Client username: " + pieces[1]);
+					}
+
 				}
 
 				
@@ -129,7 +133,7 @@ public class Startup {
 			
 			break;
 		//All further commands require client to be pinged. If not, send them a message.
-		case "JOIN":
+		case "JOIN": //TODO this might look nice, but I feel like this is slighyl incomplete. Pls improve.
 			if(pieces.length > 1){
 				if(client.getPinged() == true){
 					while(modifyingclients == true){
@@ -138,7 +142,6 @@ public class Startup {
 					try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					String cname = pieces[1].replace("#", "");
@@ -170,6 +173,23 @@ public class Startup {
 						
 					}
 
+				}
+			}
+			break;
+		case "PRIVMSG":
+			if(pieces.length > 2){
+				if(client.getPinged()){
+					if(pieces[1].contains("#")){
+						System.out.println("Received message to channel");
+						if(this.checkForChannel(pieces[1].replace("#", ""))){
+							String message = "";
+							for(int i = 2; i < pieces.length; i ++){
+								message += " " + pieces[i];
+							}
+							System.out.println("Sending " + message + " to channel " + pieces[1].replace("#", ""));
+							this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSG(message);
+						}
+					}
 				}
 			}
 			break;

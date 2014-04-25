@@ -1,11 +1,16 @@
 package com.danife.ircserver;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Startup {
 	
@@ -133,7 +138,8 @@ public class Startup {
 			
 			break;
 		//All further commands require client to be pinged. If not, send them a message.
-		case "JOIN": //TODO this might look nice, but I feel like this is slighyl incomplete. Pls improve.
+		case "JOIN": //TODO this might look nice, but I feel like this is slightly incomplete. Pls improve.
+			System.out.println("Client Attempted to Join IRC channel.");
 			if(pieces.length > 1){
 				if(client.getPinged() == true){
 					while(modifyingclients == true){
@@ -193,10 +199,45 @@ public class Startup {
 				}
 			}
 			break;
+		case "MOTD":
+			String[] motd = this.getMOTD();
+			for(String s: motd){
+				getClientChannel(client).sendChannelMSG(s);
+			}
+			break;
+		case "PING":
+			String pong = command.replace("PING ", "");
+			client.sendMessage("PONG");
+			System.out.println("PONG");
+			System.out.println("Returned "  + client.getName() + "'s ping with " + pong);
+			break;
 		
 		}
 	}
 	
+	
+	/**
+	 * Gets the server's motd.
+	 * @return the array of strings, the motd.
+	 */
+	String[] getMOTD() {
+		try {
+			BufferedReader r = new BufferedReader(new FileReader("MOTD.txt"));
+			ArrayList<String> temparray = new ArrayList<String>();
+			String s = null;
+			while((s = r.readLine()) != null){
+				temparray.add(s);
+			}
+			
+			Object[] ret = temparray.toArray();
+			String[] toret = Arrays.copyOf(ret, ret.length, String[].class);
+			return toret;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	/**
 	 * Gets the channel with the given name. If there is no channel with that name,
 	 * creates a new one.
@@ -256,5 +297,35 @@ public class Startup {
 			}
 		}
 		return true;
+	}
+	
+	 /**
+	  * Checks for the channel with the following client.
+	  * @param nick the name to check for.
+	  * @return
+	  */
+	Channel getClientChannel(String nick){
+		for(Channel c: channels){
+			if(c.checkClient(nick)){
+				return c;
+			}
+		}
+		
+		return null;
+	}
+	
+	 /**
+	  * Checks for the channel with the following client.
+	  * @param nick the name to check for.
+	  * @return
+	  */
+	Channel getClientChannel(Client client){
+		for(Channel c: channels){
+			if(c.checkUser(client)){
+				return c;
+			}
+		}
+		
+		return null;
 	}
 }

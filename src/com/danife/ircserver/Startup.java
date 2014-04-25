@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Startup {
 	
-	//Test
+	
 	boolean modifyingclients = false;
 	Startup me = this;
 	ArrayList<Client> clients = new ArrayList<Client>();
@@ -35,7 +35,7 @@ public class Startup {
 		}
 	};
 	
-	public Startup(){
+	Startup(){
 		try {
 			Runtime.getRuntime().addShutdownHook(new Thread(){
 				public void run(){
@@ -69,7 +69,7 @@ public class Startup {
 	 * @param client the client that fired the command. MUST NOT BE NULL.
 	 * @param command the command to be processed.
 	 */
-	public void handleCommand(Client client, String command){
+	void handleCommand(Client client, String command){
 		String[] pieces = command.split(" ");
 		String argument1 = command.split(" ")[0];
 		switch(argument1){
@@ -141,7 +141,7 @@ public class Startup {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					String cname = pieces[1];
+					String cname = pieces[1].replace("#", "");
 					if(checkForChannel(cname)){
 						Channel c = getChannelByName(cname);
 						try{
@@ -149,8 +149,11 @@ public class Startup {
 						}catch(Exception e){
 							e.printStackTrace();
 						}
-						c.addUser(client);
-						System.out.println("Added user " + client.getName() + " to channel " + c.getName());
+						if(c.checkUser(client) == false){
+							c.addUser(client);
+							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
+						}
+						
 					} else {
 						Channel c = getChannelByName(cname);
 						try{
@@ -158,10 +161,13 @@ public class Startup {
 						}catch(Exception e){
 							e.printStackTrace();
 						}
-						c.addUser(client);
-						channels.add(c);
-						System.out.println("Created new channel.");
-						System.out.println("Added user " + client.getName() + " to channel " + c.getName());
+						if(c.checkUser(client) == false){
+							c.addUser(client);
+							channels.add(c);
+							System.out.println("Created new channel.");
+							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
+						}
+						
 					}
 
 				}
@@ -177,7 +183,7 @@ public class Startup {
 	 * @param cname
 	 * @return
 	 */
-	public Channel getChannelByName(String cname){
+	 Channel getChannelByName(String cname){
 		boolean returned = false;
 		for(Channel c: channels){
 			if(c.getName().equals(cname)){
@@ -196,7 +202,7 @@ public class Startup {
 	 * @param cname the name of the channel to check for
 	 * @return boolean - false if no channel with name is found.
 	 */
-	public boolean checkForChannel(String cname){
+	 boolean checkForChannel(String cname){
 		boolean returned = false;
 		for(Channel c: channels){
 			if(c.getName().equals(cname)){
@@ -211,7 +217,7 @@ public class Startup {
 	 * @param name the name to check for
 	 * @return boolean - true if no players are with that name.
 	 */
-	public boolean checkForSimilarName(String name){
+	 boolean checkForSimilarName(String name){
 		ArrayList<Client> il = new ArrayList<Client>();
 		for(int i = 0; i < clients.size(); i ++){
 			il.add(clients.get(i));

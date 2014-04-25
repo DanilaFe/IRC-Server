@@ -65,6 +65,21 @@ public class Channel {
 	public ArrayList<Client> getUsers(){
 		return usershere;
 	}
+	
+	/**
+	 * Checks wether the client is on the channel.
+	 * @param c the client to be checked for.
+	 * @return true if the client IS there.
+	 */
+	public boolean checkUser(Client c){
+		for(Client tempc: usershere){
+			if(tempc.equals(c)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
 			
 
 }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Startup {
 	
 	
-	
+	boolean modifyingclients = false;
 	Startup me = this;
 	ArrayList<Client> clients = new ArrayList<Client>();
 	ArrayList<Channel> channels = new ArrayList<Channel>();
@@ -21,10 +21,13 @@ public class Startup {
 				
 				try {
 					Socket temps = s.accept();
+					modifyingclients = true;
 					Client c = new Client(me, temps);
 					System.out.println("Client connected.");
+					if(modifyingclients == false) Thread.sleep(100);
 					clients.add(c);
-				} catch (IOException e) {
+					modifyingclients = false;
+				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}
 				
@@ -114,22 +117,31 @@ public class Startup {
 		case "JOIN":
 			if(pieces.length > 1){
 				if(client.getPinged() == true){
+					while(modifyingclients == true){
+						System.out.println("Waiting for client modifications to finish...");
+					}
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					String cname = pieces[1];
 					if(checkForChannel(cname)){
 						Channel c = getChannelByName(cname);
-						for(Client cl: clients){
-							if(cl.equals(client)){
-								clients.remove(cl);
-								c.addUser(cl);
+						for(int i = 0; i < clients.size(); i ++){
+							if(clients.get(i).equals(client)){
+								c.addUser(clients.get(i));
+								clients.remove(clients.get(i));
 								System.out.println("Added user " + client.getName() + " to channel " + c.getName());
 							}
 						}
 					} else {
 						Channel c = getChannelByName(cname);
-						for(Client cl: clients){
-							if(cl.equals(client)){
-								clients.remove(cl);
-								c.addUser(cl);
+						for(int i = 0; i< clients.size(); i ++){
+							if(clients.get(i).equals(client)){
+								c.addUser(clients.get(i));
+								clients.remove(clients.get(i));
 							}
 						}
 						channels.add(c);
@@ -139,7 +151,6 @@ public class Startup {
 
 				}
 			}
-			
 			break;
 		
 		}

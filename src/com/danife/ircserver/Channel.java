@@ -57,6 +57,14 @@ public class Channel {
 	public void addUser(Client c){
 		usershere.add(c);
 	}
+	
+	/**
+	 * Requests the list of players on this server.
+	 * @return the list of users on the channel.
+	 */
+	public ArrayList<Client> getUsers(){
+		return usershere;
+	}
 			
 
 }

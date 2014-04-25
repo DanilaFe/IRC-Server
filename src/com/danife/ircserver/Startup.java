@@ -64,6 +64,11 @@ public class Startup {
 		new Startup();
 	}
 	
+	/**
+	 * Handles the command given to it.
+	 * @param client the client that fired the command. MUST NOT BE NULL.
+	 * @param command the command to be processed.
+	 */
 	public void handleCommand(Client client, String command){
 		String[] pieces = command.split(" ");
 		String argument1 = command.split(" ")[0];

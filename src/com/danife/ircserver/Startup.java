@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Startup {
 	
-	
+	//Test
 	boolean modifyingclients = false;
 	Startup me = this;
 	ArrayList<Client> clients = new ArrayList<Client>();

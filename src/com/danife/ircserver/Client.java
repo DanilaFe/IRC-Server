@@ -25,7 +25,6 @@ public class Client {
 			try{
 				String receive = null;
 				while((receive = br.readLine()) != null){
-					System.out.println(receive);
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {

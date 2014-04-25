@@ -13,6 +13,7 @@ public class Startup {
 	
 	Startup me = this;
 	ArrayList<Client> clients = new ArrayList<Client>();
+	ArrayList<Channel> channels = new ArrayList<Channel>();
 	ServerSocket s;
 	Thread acceptthread = new Thread(){
 		public void run(){
@@ -110,7 +111,72 @@ public class Startup {
 			
 			break;
 		//All further commands require client to be pinged. If not, send them a message.
+		case "JOIN":
+			if(pieces.length > 1){
+				if(client.getPinged() == true){
+					String cname = pieces[1];
+					if(checkForChannel(cname)){
+						Channel c = getChannelByName(cname);
+						for(Client cl: clients){
+							if(cl.equals(client)){
+								clients.remove(cl);
+								c.addUser(cl);
+								System.out.println("Added user " + client.getName() + " to channel " + c.getName());
+							}
+						}
+					} else {
+						Channel c = getChannelByName(cname);
+						for(Client cl: clients){
+							if(cl.equals(client)){
+								clients.remove(cl);
+								c.addUser(cl);
+							}
+						}
+						channels.add(c);
+						System.out.println("Created new channel.");
+						System.out.println("Added user " + client.getName() + " to channel " + c.getName());
+					}
+
+				}
+			}
+			
+			break;
 		
 		}
+	}
+	
+	/**
+	 * Gets the channel with the given name. If there is no channel with that name,
+	 * creates a new one.
+	 * @param cname
+	 * @return
+	 */
+	public Channel getChannelByName(String cname){
+		boolean returned = false;
+		for(Channel c: channels){
+			if(c.getName().equals(cname)){
+				returned = true;
+				return c;
+			}
+		}
+		
+		Channel newc = new Channel(cname);
+		channels.add(newc);
+		return newc;
+	}
+	
+	/**
+	 * Checks for channel with said name.
+	 * @param cname the name of the channel to check for
+	 * @return boolean - false if no channel with name is found.
+	 */
+	public boolean checkForChannel(String cname){
+		boolean returned = false;
+		for(Channel c: channels){
+			if(c.getName().equals(cname)){
+				return true;
+			}
+		}
+		return false;
 	}
 }

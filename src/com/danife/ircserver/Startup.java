@@ -11,7 +11,6 @@ public class Startup {
 	
 	
 	
-	//Initialize all you need here
 	Startup me = this;
 	ArrayList<Client> clients = new ArrayList<Client>();
 	ServerSocket s;
@@ -25,7 +24,6 @@ public class Startup {
 					System.out.println("Client connected.");
 					clients.add(c);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
@@ -46,7 +44,6 @@ public class Startup {
 							}
 						}
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

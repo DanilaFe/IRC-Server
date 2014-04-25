@@ -150,7 +150,7 @@ public class Client {
 	 * @return Wether the ping is correct (boolean)
 	 */
 	public boolean checkPing(String ping){
-		if(lasping.equals(ping)){
+		if(lasping.equals(ping) || (":" + lasping).equals(ping)){
 			this.is_pinged = true;
 			return true;
 		} else {

@@ -31,6 +31,7 @@ public class Client {
 						e.printStackTrace();
 					}
 					parent.handleCommand(me, receive);
+					System.out.println();
 				}	
 			} catch(IOException e){
 				e.printStackTrace();

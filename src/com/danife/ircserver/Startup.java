@@ -141,7 +141,9 @@ public class Startup {
 		case "JOIN": //TODO this might look nice, but I feel like this is slightly incomplete. Pls improve.
 			System.out.println("Client Attempted to Join IRC channel.");
 			if(pieces.length > 1){
+				System.out.println("   There are enough arguments.");
 				if(client.getPinged() == true){
+					System.out.println("   The client is pinged.");
 					while(modifyingclients == true){
 						System.out.println("Waiting for client modifications to finish...");
 					}

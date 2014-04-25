@@ -30,8 +30,8 @@ public class Client {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
+					System.out.println(receive);
 					parent.handleCommand(me, receive);
-					System.out.println();
 				}	
 			} catch(IOException e){
 				e.printStackTrace();

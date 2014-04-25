@@ -81,7 +81,7 @@ public class Startup {
 		case "USER":
 			if(pieces.length >= 5){
 				
-				if(this.checkForSimilarName(pieces[1])){
+				if(this.checkForSimilarName(pieces[1]) || pieces[1].equalsIgnoreCase(client.getName())){
 					String s = "Client " + client.getName() + " changed name to ";
 					client.setName(pieces[1]);
 					System.out.println(s + client.getName());
@@ -162,6 +162,7 @@ public class Startup {
 						}
 						if(c.checkUser(client) == false){
 							c.addUser(client);
+							client.sendMessage(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + pieces[1]);
 							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
 						}
 						
@@ -175,6 +176,7 @@ public class Startup {
 						if(c.checkUser(client) == false){
 							c.addUser(client);
 							channels.add(c);
+							client.sendMessage(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + pieces[1]);
 							System.out.println("Created new channel.");
 							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
 						}
@@ -209,9 +211,9 @@ public class Startup {
 			break;
 		case "PING":
 			String pong = command.replace("PING ", "");
-			client.sendMessage("PONG");
-			System.out.println("PONG");
-			System.out.println("Returned "  + client.getName() + "'s ping with " + pong);
+			client.sendMessage("PONG " + client.getName());
+			client.sendMessage("PONG " + client.getIP());
+			client.sendMessage("PONG " + client.getHost());
 			break;
 		
 		}

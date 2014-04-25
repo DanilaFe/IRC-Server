@@ -71,25 +71,30 @@ public class Startup {
 		case "USER":
 			if(pieces.length >= 5){
 				
-				String s = "Client " + client.getName() + " changed name to ";
-				client.setName(pieces[1]);
-				System.out.println(s + client.getName());
-				
-				
-				client.setIP(pieces[2]);
-				System.out.println(client.getName() + " has changed hostip to " + pieces[2]);
-				
-				client.setHost(pieces[3]);
-				System.out.println(client.getName() + "'s server IP is now " + pieces[2]);
-				
-				String realname = "";
-				for(int i = 4; i < pieces.length; i ++){
-					realname += pieces[i];
+				if(this.checkForSimilarName(pieces[1])){
+					String s = "Client " + client.getName() + " changed name to ";
+					client.setName(pieces[1]);
+					System.out.println(s + client.getName());
+					client.setIP(pieces[2]);
+					System.out.println(client.getName() + " has changed hostip to " + pieces[2]);
+					
+					client.setHost(pieces[3]);
+					System.out.println(client.getName() + "'s server IP is now " + pieces[2]);
+					
+					String realname = "";
+					for(int i = 4; i < pieces.length; i ++){
+						realname += pieces[i];
+					}
+					client.setRname(realname);
+					System.out.println("Client " + client.getName() + " set their real name to " + realname);
+					
+					client.ping();
+				} else {
+					client.sendMessage("Nick taken."); //TODO Make this a proper nice message XD
 				}
-				client.setRname(realname);
-				System.out.println("Client " + client.getName() + " set their real name to " + realname);
 				
-				client.ping();
+				
+
 				
 				
 				
@@ -97,10 +102,15 @@ public class Startup {
 			break;
 		case "NICK":
 			if(pieces.length > 1){
+				
+				if(this.checkForSimilarName(pieces[1])){
+					String s = "Client " + client.getName() + " changed name to ";
+					client.setName(pieces[1]);
+					System.out.println(s + client.getName());
+				} else {
+					client.sendMessage("Nick taken."); //TODO Make this a proper nice message XD
+				}
 
-				String s = "Client " + client.getName() + " changed name to ";
-				client.setName(pieces[1]);
-				System.out.println(s + client.getName());
 				
 			}
 			break;
@@ -129,21 +139,21 @@ public class Startup {
 					String cname = pieces[1];
 					if(checkForChannel(cname)){
 						Channel c = getChannelByName(cname);
-						for(int i = 0; i < clients.size(); i ++){
-							if(clients.get(i).equals(client)){
-								c.addUser(clients.get(i));
-								clients.remove(clients.get(i));
-								System.out.println("Added user " + client.getName() + " to channel " + c.getName());
-							}
+						try{
+							clients.remove(client);	
+						}catch(Exception e){
+							e.printStackTrace();
 						}
+						c.addUser(client);
+						System.out.println("Added user " + client.getName() + " to channel " + c.getName());
 					} else {
 						Channel c = getChannelByName(cname);
-						for(int i = 0; i< clients.size(); i ++){
-							if(clients.get(i).equals(client)){
-								c.addUser(clients.get(i));
-								clients.remove(clients.get(i));
-							}
+						try{
+							clients.remove(client);	
+						}catch(Exception e){
+							e.printStackTrace();
 						}
+						c.addUser(client);
 						channels.add(c);
 						System.out.println("Created new channel.");
 						System.out.println("Added user " + client.getName() + " to channel " + c.getName());
@@ -189,5 +199,31 @@ public class Startup {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Check for players on the server that already have similar names.
+	 * @param name the name to check for
+	 * @return boolean - true if no players are with that name.
+	 */
+	public boolean checkForSimilarName(String name){
+		ArrayList<Client> il = new ArrayList<Client>();
+		for(int i = 0; i < clients.size(); i ++){
+			il.add(clients.get(i));
+		}
+		for(int i = 0; i < channels.size(); i ++){
+			ArrayList<Client> templ = channels.get(i).getUsers();
+			for(int k = 0; k < templ.size(); k++){
+				il.add(templ.get(k));
+			}
+		} 
+		for(Client cl: il){
+			if(cl.getName() != null){
+				if(cl.getName().equalsIgnoreCase(name)){
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

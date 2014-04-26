@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 public class Startup {
 	
-	
+	String ip = "24.21.16.125";
 	boolean modifyingclients = false;
 	Startup me = this;
 	ArrayList<Client> clients = new ArrayList<Client>();
@@ -43,6 +43,7 @@ public class Startup {
 	};
 	
 	Startup(){
+		//TODO we need to get our actual ip, k?
 		try {
 			Runtime.getRuntime().addShutdownHook(new Thread(){
 				public void run(){
@@ -229,7 +230,17 @@ public class Startup {
 			client.sendMessage("PONG " + pong);
 			break;
 		case "NAMES":
-			
+			if(pieces.length > 1){
+				if(this.checkForChannel(pieces[1].replace("#", ""))){
+					try {
+						//TODO Add the message count here, instead of the 001.
+						System.out.println("Sending message " + ":" + InetAddress.getLocalHost() + " " + "001" + " " + client.getName() + " = " + pieces[1] + " :" + getChannelByName(pieces[1].replace("#", "")).getUsers());
+						client.sendMessage(":" + ip + " " + "001" + " " + client.getName() + " = " + pieces[1] + " :" + getChannelByName(pieces[1].replace("#", "")).returnPlayers());
+					} catch (UnknownHostException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 			break;
 		case "PART":
 			ArrayList<Channel> chan = getClientChannel(client);

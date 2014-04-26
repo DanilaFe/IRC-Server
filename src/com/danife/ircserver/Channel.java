@@ -109,6 +109,18 @@ public class Channel {
 
 	}
 	
+	/**
+	 * Makes a user leave the channel.
+	 * @param c
+	 */
+	public void partUser(Client c){
+		for(int i = 0; i < usershere.size(); i ++){
+			if(c.equals(usershere.get(i))){
+				usershere.remove(usershere.get(i));
+			}
+		}
+	}
+	
 	
 			
 

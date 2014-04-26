@@ -215,6 +215,7 @@ public class Startup {
 			}
 			break;
 		case "MOTD":
+			//TODO How about instead of sending this to EVERY SINGLE CHANNEL THE USER IS IN we send it to them directy? Sounds better, doesn't it?
 			String[] motd = this.getMOTD();
 			for(String s: motd){
 				for(Channel chan: getClientChannel(client)){

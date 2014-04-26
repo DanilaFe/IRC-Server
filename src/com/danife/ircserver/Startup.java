@@ -267,6 +267,10 @@ public class Startup {
 		case "LIST":
 			sendChannelList(client);
 			break;
+			
+		case "QUIT":
+			handleDisconnection(client);
+			break;
 		
 		}
 	}
@@ -358,7 +362,7 @@ public class Startup {
 	}
 	
 	 /**
-	  * Checks for the channel with the following client.
+	  * Gets the channel with the following client.
 	  * @param nick the name to check for.
 	  * @return
 	  */
@@ -373,9 +377,9 @@ public class Startup {
 	}
 	
 	 /**
-	  * Checks for the channel with the following client.
-	  * @param nick the name to check for.
-	  * @return
+	  * Gets the channel with the following client.
+	  * @param client the client to get connection
+	  * @return the array list containing all the channles this client has.
 	  */
 	ArrayList<Channel> getClientChannel(Client client){
 		ArrayList<Channel> chan = new ArrayList<Channel>();
@@ -398,5 +402,25 @@ public class Startup {
 		for(Channel c: channels){
 			client.sendMessage(":" + ip + " 001 " + client.getName() + " " + "#" + c.getName() + " " + c.getUserCount() + " " + "[+ntr]" + " " + c.getTopic()); //TODO Add function to sendchannelmode
 		}
+	}
+	
+	/**
+	 * Handles the disconnection of a client.
+	 * @param c the client that has disconnected
+	 */
+	void handleDisconnection(Client c){
+		for(Channel dis : getClientChannel(c)){
+			dis.partUser(c);
+		}
+		
+		if(clients.contains(c)){
+			clients.remove(c);
+		}
+		
+		c.close();
+		
+		System.out.println("Disconnected client " + c.getName());
+		
+		
 	}
 }

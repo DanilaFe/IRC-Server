@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Channel {
 	
+	private String topic;
 	private String name;
 	private ArrayList<Client> usershere = new ArrayList<Client>();
 	
@@ -140,6 +141,22 @@ public class Channel {
 		
 		return returnme;
 
+	}
+	
+	/**
+	 * Get the number of users on the channels
+	 * @return the number of users on the channel
+	 */
+	public int getUserCount(){
+		return usershere.size();
+	}
+	
+	/**
+	 * Returns the channel's topic.
+	 * @return the topic of the channel.
+	 */
+	public String getTopic(){
+		return topic;
 	}
 	
 			

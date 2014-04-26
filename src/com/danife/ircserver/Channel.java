@@ -121,6 +121,26 @@ public class Channel {
 		}
 	}
 	
+	/**
+	 * Request a string with a list of all users on the channel. Used for NAMES command.
+	 * @return the string containing the users ont the channel.
+	 */
+	public String returnPlayers(){
+		String returnme = "";
+		if(usershere.size() > 0){
+			returnme += "@" + usershere.get(0).getName();
+			System.out.println(usershere.get(0).getName());
+		}
+		if(usershere.size() > 1){
+			for(int i = 1; i < usershere.size(); i ++){
+				returnme += " " + usershere.get(i).getName();
+				System.out.println(usershere.get(i).getName());
+			}
+		}
+		
+		return returnme;
+
+	}
 	
 			
 

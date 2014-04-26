@@ -195,19 +195,22 @@ public class Startup {
 		case "PRIVMSG":
 			if(pieces.length > 2){
 				if(client.getPinged()){
-					if(pieces[1].contains("#")){
+					if(pieces[1].startsWith("#")){
 						System.out.println("Received message to channel");
 						System.out.println("Full message is:");
 						System.out.println("    " + command);
 						if(this.checkForChannel(pieces[1].replace("#", ""))){
 							String message = pieces[2];
+							if(message.startsWith(":")){
+								message = message.substring(1);
+							}
 							for(int i = 3; i < pieces.length; i ++){
 								message += " " + pieces[i];
 							}
 							System.out.println("Sending " + message + " to channel " + pieces[1].replace("#", ""));
 							System.out.println("Direct message sent to IRC :");
 							System.out.println("    " + ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " :" + message);
-							this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " " + message);
+							this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSGExclude(client,":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " :" + message);
 							}
 					}
 				}

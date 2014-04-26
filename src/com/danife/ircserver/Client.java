@@ -21,6 +21,18 @@ public class Client {
 	private Socket client;
 	private BufferedReader br;
 	private PrintStream ps;
+	private Thread pinger = new Thread(){
+		public void run(){
+			while(true){
+				try {
+					Thread.sleep(60 * 1000);
+					me.ping();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	};
 	private Thread listener = new Thread(){
 		public void run(){
 			try{
@@ -48,6 +60,7 @@ public class Client {
 			ps = new PrintStream(client.getOutputStream());
 			br = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			listener.start();
+			pinger.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -201,6 +214,19 @@ public class Client {
 	 */
 	public void setPinged(boolean bol){
 		is_pinged = bol;
+	}
+	
+	/**
+	 * Test connection of client by attempting to write to its socket. If it fails, kicks the client.
+	 */
+	public void testConnection(){
+		try {
+			client.getOutputStream().write(0);
+		} catch (IOException e) {
+			System.out.println("Client " + username + " has detected an error in the communication, probably ");
+		}
+		
+		parent.handleDisconnection(this);
 	}
 	
 }

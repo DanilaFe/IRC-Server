@@ -195,4 +195,12 @@ public class Client {
 		this.mode = mode;
 	}
 	
+	/**
+	 * Manualy override the pinged status.
+	 * @param bol
+	 */
+	public void setPinged(boolean bol){
+		is_pinged = bol;
+	}
+	
 }

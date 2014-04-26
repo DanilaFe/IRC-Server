@@ -207,7 +207,7 @@ public class Startup {
 							System.out.println("Sending " + message + " to channel " + pieces[1].replace("#", ""));
 							System.out.println("Direct message sent to IRC :");
 							System.out.println("    " + ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " :" + message);
-							this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " :" + message);
+							this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " " + message);
 							}
 					}
 				}

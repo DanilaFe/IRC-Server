@@ -179,11 +179,9 @@ public class Startup {
 						}
 						if(c.checkUser(client) == false){
 							c.addUser(client);
-							channels.add(c);
 							c.sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + pieces[1]);
 							c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
 							client.setMode("+i");
-							System.out.println("Created new channel.");
 							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
 						}
 						
@@ -219,12 +217,38 @@ public class Startup {
 		case "MOTD":
 			String[] motd = this.getMOTD();
 			for(String s: motd){
-				getClientChannel(client).sendChannelMSG(s);
+				for(Channel chan: getClientChannel(client)){
+					chan.sendChannelMSG(s);
+				}
+
 			}
 			break;
 		case "PING":
 			String pong = command.replace("PING ", "");
 			client.sendMessage("PONG " + pong);
+			break;
+		case "NAMES":
+			
+			break;
+		case "PART":
+			ArrayList<Channel> chan = getClientChannel(client);
+			if(chan.size() > 1){
+				for(Channel c: chan){
+					if(c.getName().equals(pieces[1].replace("#", ""))){
+						c.partUser(client);
+						System.out.println("Removed client " + c.getName() + " from channel " + c.getName() + " (case 1)");
+					}
+				}
+			} 
+			if(channels.size() == 1){
+				Channel c = channels.get(0);
+				if(c.getName().equals(pieces[1].replace("#", ""))){
+					c.partUser(client);
+					System.out.println("Removed client " + c.getName() + " from channel " + c.getName() + " (case 2)");
+					clients.add(client);
+				}
+			}
+			
 			break;
 		
 		}
@@ -268,6 +292,8 @@ public class Startup {
 			}
 		}
 		
+		
+		System.out.println("Created new channel");
 		Channel newc = new Channel(cname);
 		channels.add(newc);
 		return newc;
@@ -334,13 +360,14 @@ public class Startup {
 	  * @param nick the name to check for.
 	  * @return
 	  */
-	Channel getClientChannel(Client client){
+	ArrayList<Channel> getClientChannel(Client client){
+		ArrayList<Channel> chan = new ArrayList<Channel>();
 		for(Channel c: channels){
 			if(c.checkUser(client)){
-				return c;
+				chan.add(c);
 			}
 		}
 		
-		return null;
+		return chan;
 	}
 }

@@ -7,8 +7,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.BindException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -139,7 +141,7 @@ public class Startup {
 			break;
 		//All further commands require client to be pinged. If not, send them a message.
 		case "JOIN": //TODO this might look nice, but I feel like this is slightly incomplete. Pls improve.
-			System.out.println("Client Attempted to Join IRC channel.");
+			System.out.println("Client " + client.getName() + " Attempted to Join IRC channel.");
 			if(pieces.length > 1){
 				System.out.println("   There are enough arguments.");
 				if(client.getPinged() == true){
@@ -162,7 +164,9 @@ public class Startup {
 						}
 						if(c.checkUser(client) == false){
 							c.addUser(client);
-							client.sendMessage(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + pieces[1]);
+							c.sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + pieces[1]);
+							c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
+							client.setMode("+i");
 							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
 						}
 						
@@ -176,7 +180,9 @@ public class Startup {
 						if(c.checkUser(client) == false){
 							c.addUser(client);
 							channels.add(c);
-							client.sendMessage(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + pieces[1]);
+							c.sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + pieces[1]);
+							c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
+							client.setMode("+i");
 							System.out.println("Created new channel.");
 							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
 						}
@@ -191,14 +197,18 @@ public class Startup {
 				if(client.getPinged()){
 					if(pieces[1].contains("#")){
 						System.out.println("Received message to channel");
+						System.out.println("Full message is:");
+						System.out.println("    " + command);
 						if(this.checkForChannel(pieces[1].replace("#", ""))){
-							String message = "";
-							for(int i = 2; i < pieces.length; i ++){
+							String message = pieces[2];
+							for(int i = 3; i < pieces.length; i ++){
 								message += " " + pieces[i];
 							}
 							System.out.println("Sending " + message + " to channel " + pieces[1].replace("#", ""));
-							this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSG(message);
-						}
+							System.out.println("Direct message sent to IRC :");
+							System.out.println("    " + ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " :" + message);
+							this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " :" + message);
+							}
 					}
 				}
 			}
@@ -211,9 +221,7 @@ public class Startup {
 			break;
 		case "PING":
 			String pong = command.replace("PING ", "");
-			client.sendMessage("PONG " + client.getName());
-			client.sendMessage("PONG " + client.getIP());
-			client.sendMessage("PONG " + client.getHost());
+			client.sendMessage("PONG " + pong);
 			break;
 		
 		}

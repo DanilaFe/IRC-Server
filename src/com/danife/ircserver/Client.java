@@ -9,6 +9,7 @@ import java.util.Random;
 
 public class Client {
 	
+	private String mode;
 	private String lasping;
 	private String ip;
 	private String host;
@@ -30,7 +31,7 @@ public class Client {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					System.out.println(receive);
+					System.out.println("[" + username + "]" + receive);
 					parent.handleCommand(me, receive);
 				}	
 			} catch(IOException e){
@@ -58,6 +59,7 @@ public class Client {
 	 */
 	public void sendMessage(String m){
 		ps.println(m);
+		System.out.println("Sent "  + m);
 	}
 	
 	/**
@@ -173,7 +175,7 @@ public class Client {
 	 * @param length the length of the desired string
 	 * @return the generated string.
 	 */
-	public String generatePing(int length){
+	private String generatePing(int length){
 		Random rand = new Random();
 		String charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		char[] chars = new char[length];
@@ -183,6 +185,14 @@ public class Client {
 		
 		String ret = new String(chars);
 		return ret;
+	}
+	
+	/**
+	 * Set the mode of the client
+	 * @param mode the mode to set.
+	 */
+	public void setMode(String mode){
+		this.mode = mode;
 	}
 	
 }

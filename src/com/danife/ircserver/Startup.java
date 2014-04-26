@@ -169,6 +169,7 @@ public class Startup {
 							c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
 							client.setMode("+i");
 							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
+							this.sendChannelList(client);
 						}
 						
 					} else {
@@ -184,6 +185,7 @@ public class Startup {
 							c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
 							client.setMode("+i");
 							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
+							this.sendChannelList(client);
 						}
 						
 					}
@@ -261,6 +263,9 @@ public class Startup {
 				}
 			}
 			
+			break;
+		case "LIST":
+			sendChannelList(client);
 			break;
 		
 		}
@@ -381,5 +386,17 @@ public class Startup {
 		}
 		
 		return chan;
+	}
+	
+	/**
+	 * Sends the client a list of all the channels on the server.
+	 * @param client the client to send the list to.
+	 */
+	void sendChannelList(Client client){
+		String channelmode; //TODO get the actual channel mode.
+		System.out.println(client.getName() + " requested channel list.");
+		for(Channel c: channels){
+			client.sendMessage(":" + ip + " 001 " + client.getName() + " " + "#" + c.getName() + " " + c.getUserCount() + " " + "[+ntr]" + " " + c.getTopic()); //TODO Add function to sendchannelmode
+		}
 	}
 }

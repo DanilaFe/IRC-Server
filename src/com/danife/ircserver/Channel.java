@@ -81,11 +81,35 @@ public class Channel {
 		return false;
 	}
 	
+	/**
+	 * Sends message to every client on the channel.
+	 * @param s the message to send.
+	 */
 	public void sendChannelMSG(String s){
-		for(Client c: usershere){
-			c.sendMessage(s); //TODO make this correct protocol.
-		}
+		sendChannelMSGExclude(null, s);
 	}
+	
+	/**
+	 * Sends a message to every client except for the one passed down to it.
+	 * @param excludeme the client to be excluded
+	 * @param message the message to be sent.
+	 */
+	public void sendChannelMSGExclude(Client excludeme, String message){
+		if(excludeme != null){
+			for(Client c: usershere){
+				if(!(excludeme.equals(c))){
+					c.sendMessage(message);
+				}
+			}
+		} else {
+			for(Client c: usershere){
+				c.sendMessage(message);
+			}
+		}
+
+	}
+	
+	
 			
 
 }

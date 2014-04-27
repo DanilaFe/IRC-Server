@@ -153,7 +153,6 @@ public class Client {
 		try {
 			client.close();
 			pinger.stop();
-			listener.stop();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

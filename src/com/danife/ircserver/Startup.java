@@ -55,6 +55,28 @@ public class Startup {
 			}
 		}
 	};
+	Thread info = new Thread(){
+		public void run(){
+			while(true){
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("Clients:");
+				for(Client c:clients){
+					System.out.println("    [Client] " + c.getName());
+				}
+				System.out.println("Channels:");
+				for(Channel c: channels){
+					System.out.println("    [Channel] " + c.getName());
+					System.out.println("    [Clients] " + c.returnUsers());
+				}
+			}
+
+		}
+	};
 	
 	Startup(){
 		//TODO we need to get our actual ip, k?
@@ -76,6 +98,7 @@ public class Startup {
 			});
 			s = new ServerSocket(6667);
 			acceptthread.start();
+			info.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Cause:" + e.getCause());
@@ -122,7 +145,7 @@ public class Startup {
 					client.sendMessage(":" + ip + " " + RPL_WELCOME + " " + client.getName() +  " :Welcome to Danilafe's IRC");
 					this.sendMOTD(client);
 				} else {
-					client.sendMessage("Nick taken."); //TODO Make this a proper nice message XD
+					client.sendMessage(":" + ip + " " + ERR_NICKNAMEINUSE + " " + client.getName());
 					System.out.println("Client attempted to connect with taken username. Client username: " + pieces[1]);
 				}
 				
@@ -141,7 +164,7 @@ public class Startup {
 						client.setName(pieces[1]);
 						System.out.println(s + client.getName());
 					} else {
-						client.sendMessage("Nick taken."); //TODO Make this a proper nice message XD
+						client.sendMessage(":" + ip + " " + ERR_NICKNAMEINUSE + " " + client.getName()); //TODO Make this a proper nice message XD
 						System.out.println("Client attempted to connect with taken username. Client username: " + pieces[1]);
 					}
 
@@ -466,6 +489,10 @@ public class Startup {
 	}
 	}
 	
+	/**
+	 * Sends the motd stored in MOTD.txt to the client
+	 * @param client the client to send to.
+	 */
 	void sendMOTD(Client client){
 		String[] motd = this.getMOTD();
 		client.sendMessage(":" + ip + " " + RPL_MOTDSTART + " " + client.getName() + " :Start of /MOTD command");

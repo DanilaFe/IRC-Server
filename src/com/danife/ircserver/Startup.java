@@ -99,9 +99,12 @@ public class Startup {
 			if(pieces.length >= 5){
 				
 				if(this.checkForSimilarName(pieces[1]) || pieces[1].equalsIgnoreCase(client.getName())){
-					String s = "Client " + client.getName() + " changed name to ";
-					client.setName(pieces[1]);
-					System.out.println(s + client.getName());
+					if(client.getName() == null){
+						String s = "Client " + client.getName() + " changed name to ";
+						client.setName(pieces[1]);
+						System.out.println(s + client.getName());
+					}
+					
 					client.setIP(pieces[2]);
 					System.out.println(client.getName() + " has changed hostip to " + pieces[2]);
 					
@@ -454,7 +457,6 @@ public class Startup {
 	void sendNamesToClient(Client client, String channel){
 		if(this.checkForChannel(channel.replace("#", ""))){
 
-			//TODO Add the REPLY CODE!! here, instead of the 001.
 			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnUsers());
 			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnUsers());
 			client.sendMessage(":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + channel + " :" + getChannelByName(channel.replace("#", "")).returnUsers());

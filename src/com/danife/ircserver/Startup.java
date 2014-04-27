@@ -25,6 +25,10 @@ public class Startup {
 	final int RPL_ENDOFNAMES = 366;
 	final int RPL_LIST = 322;
 	final int RPL_LISTEND = 323;
+	final int ERR_NICKNAMEINUSE = 433;
+	final int RPL_MOTD = 372;
+	final int RPL_ENDOFMOTD = 376;
+	final int RPL_MOTDSTART = 375;
 	
 	String ip = "24.21.16.125";
 	boolean modifyingclients = false;
@@ -95,12 +99,9 @@ public class Startup {
 			if(pieces.length >= 5){
 				
 				if(this.checkForSimilarName(pieces[1]) || pieces[1].equalsIgnoreCase(client.getName())){
-					if(client.getName() == null){
-						String s = "Client " + client.getName() + " changed name to ";
-						client.setName(pieces[1]);
-						System.out.println(s + client.getName());
-					}
-					 
+					String s = "Client " + client.getName() + " changed name to ";
+					client.setName(pieces[1]);
+					System.out.println(s + client.getName());
 					client.setIP(pieces[2]);
 					System.out.println(client.getName() + " has changed hostip to " + pieces[2]);
 					
@@ -210,14 +211,8 @@ public class Startup {
 			}
 			break;
 		case "MOTD":
-			//TODO How about instead of sending this to EVERY SINGLE CHANNEL THE USER IS IN we send it to them directy? Sounds better, doesn't it?
-			String[] motd = this.getMOTD();
-			for(String s: motd){
-				for(Channel chan: getClientChannel(client)){
-					chan.sendChannelMSG(s);
-				}
-
-			}
+			this.sendMOTD(client);
+			
 			break;
 		case "PING":
 			String pong = command.replace("PING ", "");
@@ -466,5 +461,14 @@ public class Startup {
 			client.sendMessage(":" + ip + " " + RPL_ENDOFNAMES + " " + client.getName() + " :End of /NAMES command.");
 
 	}
+	}
+	
+	void sendMOTD(Client client){
+		String[] motd = this.getMOTD();
+		client.sendMessage(":" + ip + " " + RPL_MOTDSTART + " " + client.getName() + " :Start of /MOTD command");
+		for(String s: motd){
+			client.sendMessage(":" + ip + " " + RPL_MOTD + " " + client.getName() + " :" + s);
+		}
+		client.sendMessage(":" + ip + " " + RPL_ENDOFMOTD + " " + client.getName() + " :End of /MOTD command.");
 	}
 }

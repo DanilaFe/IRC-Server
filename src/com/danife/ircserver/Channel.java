@@ -60,7 +60,7 @@ public class Channel {
 	}
 	
 	/**
-	 * Requests the list of players on this server.
+	 * Requests the list of users on this server.
 	 * @return the list of users on the channel.
 	 */
 	public ArrayList<Client> getUsers(){
@@ -126,7 +126,7 @@ public class Channel {
 	 * Request a string with a list of all users on the channel. Used for NAMES command.
 	 * @return the string containing the users ont the channel.
 	 */
-	public String returnPlayers(){
+	public String returnUsers(){
 		String returnme = "";
 		if(usershere.size() > 0){
 			returnme += "@" + usershere.get(0).getName();

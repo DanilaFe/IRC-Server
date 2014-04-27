@@ -448,13 +448,18 @@ public class Startup {
 		}
 	}
 	
+	/**
+	 * Sends a list of all the clients on the channel.
+	 * @param client the client to send the list to
+	 * @param channel the channel whose clients to list.
+	 */
 	void sendNamesToClient(Client client, String channel){
 		if(this.checkForChannel(channel.replace("#", ""))){
 
 			//TODO Add the REPLY CODE!! here, instead of the 001.
-			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnPlayers());
-			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnPlayers());
-			client.sendMessage(":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + channel + " :" + getChannelByName(channel.replace("#", "")).returnPlayers());
+			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnUsers());
+			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnUsers());
+			client.sendMessage(":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + channel + " :" + getChannelByName(channel.replace("#", "")).returnUsers());
 			client.sendMessage(":" + ip + " " + RPL_ENDOFNAMES + " " + client.getName() + " :End of /NAMES command.");
 
 	}

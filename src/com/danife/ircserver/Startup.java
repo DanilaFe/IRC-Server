@@ -120,6 +120,7 @@ public class Startup {
 					
 					client.ping();
 					client.sendMessage(":" + ip + " " + RPL_WELCOME + " " + client.getName() +  " :Welcome to Danilafe's IRC");
+					this.sendMOTD(client);
 				} else {
 					client.sendMessage("Nick taken."); //TODO Make this a proper nice message XD
 					System.out.println("Client attempted to connect with taken username. Client username: " + pieces[1]);

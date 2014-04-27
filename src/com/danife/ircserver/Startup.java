@@ -426,7 +426,7 @@ public class Startup {
 				c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
 				client.setMode("+i");
 				System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
-				this.sendChannelList(client);
+
 			}
 			
 		} else {
@@ -442,7 +442,7 @@ public class Startup {
 				c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
 				client.setMode("+i");
 				System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
-				this.sendChannelList(client);
+				
 			}
 			
 		}

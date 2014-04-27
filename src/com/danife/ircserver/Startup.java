@@ -16,11 +16,11 @@ import java.util.Arrays;
 
 public class Startup {
 	//TODO we still need all the reply codes.
-	final int RPL_WELCOME = 1;
-	final int RPL_YOURHOST = 2;
-	final int RPL_CREATED = 3;
-	final int RPL_MYINFO = 4;
-	final int RPL_BOUNCE = 5;
+	final String RPL_WELCOME = "001";
+	final String RPL_YOURHOST = "002";
+	final String RPL_CREATED = "003";
+	final String RPL_MYINFO = "004";
+	final String RPL_BOUNCE = "005";
 	final int RPL_NAMREPLY = 353;
 	final int RPL_ENDOFNAMES = 366;
 	final int RPL_LIST = 322;
@@ -112,6 +112,7 @@ public class Startup {
 					System.out.println("Client " + client.getName() + " set their real name to " + realname);
 					
 					client.ping();
+					client.sendMessage(":" + ip + " " + RPL_WELCOME + " " + client.getName() +  " :Welcome to Danilafe's IRC");
 				} else {
 					client.sendMessage("Nick taken."); //TODO Make this a proper nice message XD
 					System.out.println("Client attempted to connect with taken username. Client username: " + pieces[1]);
@@ -425,6 +426,7 @@ public class Startup {
 				c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
 				client.setMode("+i");
 				System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
+				this.sendChannelList(client);
 			}
 			
 		} else {
@@ -440,6 +442,7 @@ public class Startup {
 				c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
 				client.setMode("+i");
 				System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
+				this.sendChannelList(client);
 			}
 			
 		}
@@ -450,8 +453,9 @@ public class Startup {
 
 			//TODO Add the REPLY CODE!! here, instead of the 001.
 			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnPlayers());
-			System.out.println("Sending message " + ":" + ip + " " + RPL_ENDOFNAMES + " " + client.getName() + " :Eend of /NAMES command.");
+			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnPlayers());
 			client.sendMessage(":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + channel + " :" + getChannelByName(channel.replace("#", "")).returnPlayers());
+			client.sendMessage(":" + ip + " " + RPL_ENDOFNAMES + " " + client.getName() + " :End of /NAMES command.");
 
 	}
 	}

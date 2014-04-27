@@ -47,7 +47,8 @@ public class Client {
 					parent.handleCommand(me, receive);
 				}	
 			} catch(IOException e){
-				e.printStackTrace();
+				System.out.println("Client " + username + " has detected an error in the communication, probably closed socket.");
+				parent.handleDisconnection(me);
 			}
 			
 		}
@@ -151,6 +152,8 @@ public class Client {
 	public void close(){
 		try {
 			client.close();
+			pinger.stop();
+			listener.stop();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -223,7 +226,7 @@ public class Client {
 		try {
 			client.getOutputStream().write(0);
 		} catch (IOException e) {
-			System.out.println("Client " + username + " has detected an error in the communication, probably ");
+			System.out.println("Client " + username + " has detected an error in the communication, probably close socket.");
 		}
 		
 		parent.handleDisconnection(this);

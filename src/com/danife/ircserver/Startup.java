@@ -94,7 +94,7 @@ public class Startup {
 	void handleCommand(Client client, String command){
 		String[] pieces = command.split(" ");
 		String argument1 = command.split(" ")[0];
-		switch(argument1){
+		switch(argument1.toUpperCase()){
 		case "USER":
 			if(pieces.length >= 5){
 				

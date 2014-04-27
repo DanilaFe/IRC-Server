@@ -55,28 +55,7 @@ public class Startup {
 			}
 		}
 	};
-	Thread info = new Thread(){
-		public void run(){
-			while(true){
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.println("Clients:");
-				for(Client c:clients){
-					System.out.println("    [Client] " + c.getName());
-				}
-				System.out.println("Channels:");
-				for(Channel c: channels){
-					System.out.println("    [Channel] " + c.getName());
-					System.out.println("    [Clients] " + c.returnUsers());
-				}
-			}
 
-		}
-	};
 	
 	Startup(){
 		//TODO we need to get our actual ip, k?
@@ -98,7 +77,6 @@ public class Startup {
 			});
 			s = new ServerSocket(6667);
 			acceptthread.start();
-			info.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Cause:" + e.getCause());
@@ -161,8 +139,12 @@ public class Startup {
 				if(!(pieces[1].equalsIgnoreCase(client.getName()))){
 					if(this.checkForSimilarName(pieces[1])){
 						String s = "Client " + client.getName() + " changed name to ";
+						String oldname = client.getName();
 						client.setName(pieces[1]);
 						System.out.println(s + client.getName());
+						for(Channel c: getClientChannel(client)){
+							c.sendChannelMSG(":" + oldname + "!" + oldname + "@" + client.getIP() +" NICK " + client.getName());
+						}
 					} else {
 						client.sendMessage(":" + ip + " " + ERR_NICKNAMEINUSE + " " + client.getName()); //TODO Make this a proper nice message XD
 						System.out.println("Client attempted to connect with taken username. Client username: " + pieces[1]);

@@ -15,6 +15,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Startup {
+	//TODO we still need all the reply codes.
+	final int RPL_WELCOME = 1;
+	final int RPL_YOURHOST = 2;
+	final int RPL_CREATED = 3;
+	final int RPL_MYINFO = 4;
+	final int RPL_BOUNCE = 5;
+	final int RPL_NAMREPLY = 353;
+	final int RPL_ENDOFNAMES = 366;
+	final int RPL_LIST = 322;
+	final int RPL_LISTEND = 323;
 	
 	String ip = "24.21.16.125";
 	boolean modifyingclients = false;
@@ -146,50 +156,28 @@ public class Startup {
 			if(pieces.length > 1){
 				System.out.println("   There are enough arguments.");
 				if(client.getPinged() == true){
-					System.out.println("   The client is pinged.");
-					while(modifyingclients == true){
-						System.out.println("Waiting for client modifications to finish...");
-					}
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					String cname = pieces[1].replace("#", "");
-					if(checkForChannel(cname)){
-						Channel c = getChannelByName(cname);
-						try{
-							clients.remove(client);	
-						}catch(Exception e){
-							e.printStackTrace();
+					if(pieces[1].split(",").length == 1){
+						System.out.println("   The client is pinged.");
+						while(modifyingclients == true){
+							System.out.println("Waiting for client modifications to finish...");
 						}
-						if(c.checkUser(client) == false){
-							c.addUser(client);
-							c.sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + pieces[1]);
-							c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
-							client.setMode("+i");
-							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
-							this.sendChannelList(client);
-						}
-						
-					} else {
-						Channel c = getChannelByName(cname);
-						try{
-							clients.remove(client);	
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-						if(c.checkUser(client) == false){
-							c.addUser(client);
-							c.sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + pieces[1]);
-							c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
-							client.setMode("+i");
-							System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
-							this.sendChannelList(client);
-						}
-						
-					}
+						String cname = pieces[1].replace("#", "");
+						this.joinChannel(cname, client);
+						this.sendNamesToClient(client, pieces[1]);
 
+					} else if(pieces[1].split(",").length > 1){
+						String[] channels = pieces[1].split(",");
+						ArrayList<String> channel= new ArrayList<String>();
+						for(String c: channels){
+							channel.add(c.replace("#", ""));
+						}
+						Object[] obj =  channel.toArray();
+						String[] properchannels = Arrays.copyOf(obj, obj.length, String[].class);
+						for(String s: properchannels){
+							this.joinChannel(s, client);
+							this.sendNamesToClient(client, "#" + s);
+						}
+					}
 				}
 			}
 			break;
@@ -233,15 +221,7 @@ public class Startup {
 			break;
 		case "NAMES":
 			if(pieces.length > 1){
-				if(this.checkForChannel(pieces[1].replace("#", ""))){
-					try {
-						//TODO Add the message count here, instead of the 001.
-						System.out.println("Sending message " + ":" + InetAddress.getLocalHost() + " " + "001" + " " + client.getName() + " = " + pieces[1] + " :" + getChannelByName(pieces[1].replace("#", "")).getUsers());
-						client.sendMessage(":" + ip + " " + "001" + " " + client.getName() + " = " + pieces[1] + " :" + getChannelByName(pieces[1].replace("#", "")).returnPlayers());
-					} catch (UnknownHostException e) {
-						e.printStackTrace();
-					}
-				}
+				this.sendNamesToClient(client, pieces[1]);
 			}
 			break;
 		case "PART":
@@ -400,8 +380,10 @@ public class Startup {
 		String channelmode; //TODO get the actual channel mode.
 		System.out.println(client.getName() + " requested channel list.");
 		for(Channel c: channels){
-			client.sendMessage(":" + ip + " 001 " + client.getName() + " " + "#" + c.getName() + " " + c.getUserCount() + " " + "[+ntr]" + " " + c.getTopic()); //TODO Add function to sendchannelmode
+			client.sendMessage(":" + ip + " " + RPL_LIST + " " + client.getName() + " " + "#" + c.getName() + " " + c.getUserCount() + " " + "[+ntr]" + " " + c.getTopic()); //TODO Add function to sendchannelmode
 		}
+		client.sendMessage(":" + ip + " " + RPL_LISTEND + " " + client.getName() + " " + ":End of /LIST command." );
+		
 	}
 	
 	/**
@@ -422,5 +404,55 @@ public class Startup {
 		System.out.println("Disconnected client " + c.getName());
 		
 		
+	}
+	
+	/**
+	 * Adds the client to the channel passed down.
+	 * @param cname the name of the channel to add the user to.
+	 * @param client the client to add to the channel.
+	 */
+	void joinChannel(String cname, Client client){
+		if(checkForChannel(cname)){
+			Channel c = getChannelByName(cname);
+			try{
+				clients.remove(client);	
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			if(c.checkUser(client) == false){
+				c.addUser(client);
+				c.sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + "#" + cname);
+				c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
+				client.setMode("+i");
+				System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
+			}
+			
+		} else {
+			Channel c = getChannelByName(cname);
+			try{
+				clients.remove(client);	
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			if(c.checkUser(client) == false){
+				c.addUser(client);
+				c.sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + "#" + cname);
+				c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
+				client.setMode("+i");
+				System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
+			}
+			
+		}
+	}
+	
+	void sendNamesToClient(Client client, String channel){
+		if(this.checkForChannel(channel.replace("#", ""))){
+
+			//TODO Add the REPLY CODE!! here, instead of the 001.
+			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnPlayers());
+			System.out.println("Sending message " + ":" + ip + " " + RPL_ENDOFNAMES + " " + client.getName() + " :Eend of /NAMES command.");
+			client.sendMessage(":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + channel + " :" + getChannelByName(channel.replace("#", "")).returnPlayers());
+
+	}
 	}
 }

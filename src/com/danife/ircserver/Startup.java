@@ -95,9 +95,12 @@ public class Startup {
 			if(pieces.length >= 5){
 				
 				if(this.checkForSimilarName(pieces[1]) || pieces[1].equalsIgnoreCase(client.getName())){
-					String s = "Client " + client.getName() + " changed name to ";
-					client.setName(pieces[1]);
-					System.out.println(s + client.getName());
+					if(client.getName() == null){
+						String s = "Client " + client.getName() + " changed name to ";
+						client.setName(pieces[1]);
+						System.out.println(s + client.getName());
+					}
+					 
 					client.setIP(pieces[2]);
 					System.out.println(client.getName() + " has changed hostip to " + pieces[2]);
 					

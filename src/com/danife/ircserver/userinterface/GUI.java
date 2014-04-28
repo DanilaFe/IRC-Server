@@ -41,6 +41,7 @@ public class GUI implements ActionListener{
 					Thread.sleep(500);
 					users.setListData(s.getUserNames());
 					channels.setListData(s.getChannelNames());
+					frame.revalidate();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

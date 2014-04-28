@@ -70,7 +70,7 @@ public class GUI implements ActionListener{
 			if(!folder.exists()){
 				folder.mkdir();
 			}
-			File testfile = new File("logs" + File.separator + "log-"+Calendar.getInstance().getTime().toString() + ".txt");
+			File testfile = new File("logs","log-"+Calendar.getInstance().getTime().toString() + ".txt");
 			testfile.createNewFile();
 			pwriter = new PrintWriter(testfile, "UTF-8");
 

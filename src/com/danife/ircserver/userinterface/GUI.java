@@ -3,6 +3,7 @@ package com.danife.ircserver.userinterface;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -25,7 +26,7 @@ public class GUI implements ActionListener{
 		s = startup;
 		
 		try {
-			pwriter = new PrintWriter("log-" + Calendar.getInstance().getTime().toString(), "UTF-8");
+			pwriter = new PrintWriter("logs" + File.separator + "log-" + Calendar.getInstance().getTime().toString(), "UTF-8");
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

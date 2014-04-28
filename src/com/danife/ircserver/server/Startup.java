@@ -14,6 +14,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.danife.ircserver.userinterface.GUI;
+
 public class Startup {
 	//TODO we still need all the reply codes.
 	final String RPL_WELCOME = "001";
@@ -30,6 +32,7 @@ public class Startup {
 	final int RPL_ENDOFMOTD = 376;
 	final int RPL_MOTDSTART = 375;
 	
+	private GUI gui = new GUI(this);
 	String ip = "24.21.16.125";
 	boolean modifyingclients = false;
 	Startup me = this;
@@ -58,6 +61,7 @@ public class Startup {
 	
 	Startup(){
 		//TODO we need to get our actual ip, k?
+		gui.addLogLine("Initializing DanilaFe's Server");
 		try {
 			Runtime.getRuntime().addShutdownHook(new Thread(){
 				public void run(){
@@ -69,15 +73,18 @@ public class Startup {
 								c.close();
 							}
 						}
+						gui.close();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
 			});
 			s = new ServerSocket(6667);
+			gui.addLogLine("Initialized Server Socket");
 			acceptthread.start();
+			gui.addLogLine("Activated listener. Server is now open to connections.");
 		} catch (IOException e) {
-			e.printStackTrace();
+			gui.addLogLine("Problem binding to port. Is another program using it?");
 		}
 	}
 	
@@ -115,8 +122,10 @@ public class Startup {
 					client.ping();
 					client.sendMessage(":" + ip + " " + RPL_WELCOME + " " + client.getName() +  " :Welcome to Danilafe's IRC");
 					this.sendMOTD(client);
+					gui.addLogLine("Client has issued USER command.");
 				} else {
 					client.sendMessage(":" + ip + " " + ERR_NICKNAMEINUSE + " " + client.getName());
+					gui.addLogLine("Client tried to connect with nickname that is already in use.");
 				}
 				
 				
@@ -136,6 +145,7 @@ public class Startup {
 						for(Channel c: getClientChannel(client)){
 							c.sendChannelMSG(":" + oldname + "!" + oldname + "@" + client.getIP() +" NICK " + client.getName());
 						}
+						gui.addLogLine(oldname + " has changed their nick to " + client.getName());
 					} else {
 						client.sendMessage(":" + ip + " " + ERR_NICKNAMEINUSE + " " + client.getName()); 
 					}
@@ -148,9 +158,9 @@ public class Startup {
 		case "PONG":
 			
 			if(client.checkPing(pieces[1])){
-		
+				gui.addLogLine("Client " + client.getName() + " has successfully replied to pong.");
 			} else {
-			
+				gui.addLogLine("Client " + client.getName() + " has failed the pong.");
 			}
 			
 			break;
@@ -162,7 +172,7 @@ public class Startup {
 						String cname = pieces[1].replace("#", "");
 						this.joinChannel(cname, client);
 						this.sendNamesToClient(client, pieces[1]);
-
+						gui.addLogLine("Client " + client.getName() + " has joined channel " + cname);
 					} else if(pieces[1].split(",").length > 1){
 						String[] channels = pieces[1].split(",");
 						ArrayList<String> channel= new ArrayList<String>();
@@ -175,6 +185,12 @@ public class Startup {
 							this.joinChannel(s, client);
 							this.sendNamesToClient(client, "#" + s);
 						}
+						String channellist = channels[0];
+						for(int i = 1; i < properchannels.length; i ++){
+							channellist += channels[i];
+						}
+						gui.addLogLine("Client " + client.getName() + " has joined channels " + channellist);
+						
 					}
 				}
 			}
@@ -192,22 +208,25 @@ public class Startup {
 								message += " " + pieces[i];
 							}
 							this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSGExclude(client,":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " :" + message);
-							}
+							gui.addLogLine("Client " + client.getName() + " to channel " + this.getChannelByName(pieces[1].replace("#", "")).getName() + ": " + message);
+						}
 					}
 				}
 			}
 			break;
 		case "MOTD":
 			this.sendMOTD(client);
-			
+			gui.addLogLine("Sent MOTD to " + client.getName());
 			break;
 		case "PING":
 			String pong = command.replace("PING ", "");
 			client.sendMessage("PONG " + pong);
+			gui.addLogLine("Received ping from " + client.getName());
 			break;
 		case "NAMES":
 			if(pieces.length > 1){
 				this.sendNamesToClient(client, pieces[1]);
+				gui.addLogLine("Sent client " + client.getName() + " list of names on channel " + pieces[1]);
 			}
 			break;
 		case "PART":
@@ -216,6 +235,7 @@ public class Startup {
 				for(Channel c: chan){
 					if(c.getName().equals(pieces[1].replace("#", ""))){
 						c.partUser(client);
+						gui.addLogLine("Disconnected client " + client.getName() + " from channel " + c.getName());
 					}
 				}
 			} 
@@ -224,16 +244,20 @@ public class Startup {
 				if(c.getName().equals(pieces[1].replace("#", ""))){
 					c.partUser(client);
 					clients.add(client);
+					gui.addLogLine("Disconnected client " + client.getName() + " from channel " + c.getName());
+					
 				}
 			}
 			
 			break;
 		case "LIST":
 			sendChannelList(client);
+			gui.addLogLine("Sent client " + client.getName() + " the list of channels" );
 			break;
 			
 		case "QUIT":
 			handleDisconnection(client);
+			gui.addLogLine("Client " + client.getName() + " was disconnected.");
 			break;
 		
 		}
@@ -449,5 +473,13 @@ public class Startup {
 			client.sendMessage(":" + ip + " " + RPL_MOTD + " " + client.getName() + " :" + s);
 		}
 		client.sendMessage(":" + ip + " " + RPL_ENDOFMOTD + " " + client.getName() + " :End of /MOTD command.");
+	}
+	
+	/**
+	 * Prints GUI line, used for things outside this class to print log lines instead of System.out.println(); 
+	 * @param line
+	 */
+	public void addLogLine(String line){
+		gui.addLogLine(line);
 	}
 }

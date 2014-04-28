@@ -482,4 +482,20 @@ public class Startup {
 	public void addLogLine(String line){
 		gui.addLogLine(line);
 	}
+	
+	public void sendServerMessage(String message){
+		ArrayList<Client> tclients = new ArrayList<Client>();
+		tclients.addAll(clients);
+		for(int i = 0; i < channels.size(); i ++){
+			ArrayList<Client> clients = channels.get(i).getUsers();
+			for(Client c: clients){
+				if(!(tclients.contains(c))){
+					tclients.add(c);
+				}
+			}
+		}
+		for(Client c: tclients){
+			c.sendMessage(":" + ip + " PRIVMSG " +c.getName() + " :" + message);
+		}
+	}
 }

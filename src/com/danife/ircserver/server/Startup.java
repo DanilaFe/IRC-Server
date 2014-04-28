@@ -258,6 +258,7 @@ public class Startup {
         case "QUIT":
             handleDisconnection(client);
             gui.addLogLine("Client " + client.getName() + " was disconnected.");
+            
             break;
 
         }
@@ -399,6 +400,8 @@ public class Startup {
     void handleDisconnection(Client c) {
         for (Channel dis: getClientChannel(c)) {
             dis.partUser(c);
+            dis.sendChannelMSGExclude(c, ":" + c.getName() + "!" + c.getName() + "@" + c.getIP() + " QUIT " + ":Client disconnected.");
+            
         }
 
         if (clients.contains(c)) {

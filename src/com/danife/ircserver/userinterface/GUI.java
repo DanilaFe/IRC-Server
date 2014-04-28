@@ -66,10 +66,19 @@ public class GUI implements ActionListener{
 		
 		
 		try {
-			pwriter = new PrintWriter("logs" + File.separator + "log-" + Calendar.getInstance().getTime().toString(), "UTF-8");
-		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			File folder = new File("logs");
+			if(!folder.exists()){
+				folder.mkdir();
+			}
+			File testfile = new File("logs" + File.separator + "log-"+Calendar.getInstance().getTime().toString() + ".txt");
+			testfile.createNewFile();
+			pwriter = new PrintWriter(testfile, "UTF-8");
+
+		
+		} catch (Exception  e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println(e.getCause());
 		}
 		
 		

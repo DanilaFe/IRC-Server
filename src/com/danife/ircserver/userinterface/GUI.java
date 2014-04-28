@@ -1,6 +1,8 @@
 package com.danife.ircserver.userinterface;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,20 +14,56 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 
 import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.danife.ircserver.server.Startup;
 
 public class GUI implements ActionListener{
+	Container data = new Container();
+	Container lists = new Container();
+	private JScrollPane userpane;
+	private JScrollPane channelpane;
+	private JList<String> users;
+	private JList<String> channels;
 	private JFrame frame = new JFrame("DanilaFe's IRC Server");
 	private JTextArea area = new JTextArea();
 	private JTextField field = new JTextField();
 	private PrintWriter pwriter;
 	private Startup s;
+	private Thread updatelists = new Thread(){
+		public void run(){
+			while(true){
+				try {
+					Thread.sleep(500);
+					users.setListData(s.getUserNames());
+					channels.setListData(s.getChannelNames());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	};
+	
 	
 	public GUI(Startup startup){
 		s = startup;
+		users = new JList<String>(s.getUserNames());
+		channels = new JList<String>(s.getChannelNames());
+		userpane = new JScrollPane(users);
+		channelpane = new JScrollPane(channels);
+		
+		lists.setLayout(new GridLayout(0,1));
+		lists.add(userpane);
+		lists.add(channelpane);
+		
+		data.setLayout(new BorderLayout());
+		data.add(area, BorderLayout.EAST);
+		data.add(lists, BorderLayout.CENTER);
+		
 		
 		try {
 			pwriter = new PrintWriter("logs" + File.separator + "log-" + Calendar.getInstance().getTime().toString(), "UTF-8");
@@ -39,13 +77,14 @@ public class GUI implements ActionListener{
 		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 		
-		frame.add(area, BorderLayout.CENTER);
+		frame.add(data, BorderLayout.CENTER);
 		frame.add(field, BorderLayout.SOUTH);
 		
 		area.setEditable(false);
 		field.addActionListener(this);
 		
 		frame.setVisible(true);
+		updatelists.start();
 	}
 	
 	@Override

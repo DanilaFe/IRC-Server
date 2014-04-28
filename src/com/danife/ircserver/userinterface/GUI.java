@@ -1,8 +1,10 @@
 package com.danife.ircserver.userinterface;
 
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -41,13 +43,33 @@ public class GUI implements ActionListener{
 		frame.add(field, BorderLayout.SOUTH);
 		
 		area.setEditable(false);
+		field.addActionListener(this);
 		
 		frame.setVisible(true);
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	
+		
+		if(e.getSource().equals(field)){
+			String text = field.getText();
+			if(text.startsWith("/")){
+				//It's a command.
+				String command = text.replace("/", "");
+				String[] pieces = command.split(" ");
+				switch(pieces[0].toLowerCase()){
+				case "quit":
+					WindowEvent wev = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+					Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+					break;
+				}
+			}
+			else {
+				//It's text.
+				s.sendServerMessage(text);
+			}
+			field.setText("");
+		}
 		
 	}
 	

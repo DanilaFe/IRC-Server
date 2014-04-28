@@ -6,12 +6,13 @@ public class Channel {
 	
 	private String topic;
 	private String name;
-	private ArrayList<Client> usershere = new ArrayList<Client>();
+	private ArrayList<Client> usershere = new ArrayList<Client>(); 
+	//This is daithi testing commenting and uploading shit.
 	
 	public Channel(String name){
 		this.name = name;
 	}
-	
+
 	/**
 	 * Requests channel's name.
 	 * @return The channel's name.

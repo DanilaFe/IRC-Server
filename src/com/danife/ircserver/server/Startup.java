@@ -1,4 +1,4 @@
-package com.danife.ircserver;
+package com.danife.ircserver.server;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,7 +44,6 @@ public class Startup {
 					Socket temps = s.accept();
 					modifyingclients = true;
 					Client c = new Client(me, temps);
-					System.out.println("Client connected.");
 					if(modifyingclients == false) Thread.sleep(100);
 					clients.add(c);
 					modifyingclients = false;
@@ -79,7 +78,6 @@ public class Startup {
 			acceptthread.start();
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Cause:" + e.getCause());
 		}
 	}
 	
@@ -101,30 +99,24 @@ public class Startup {
 				
 				if(this.checkForSimilarName(pieces[1]) || pieces[1].equalsIgnoreCase(client.getName())){
 					if(client.getName() == null){
-						String s = "Client " + client.getName() + " changed name to ";
 						client.setName(pieces[1]);
-						System.out.println(s + client.getName());
 					}
 					
 					client.setIP(pieces[2]);
-					System.out.println(client.getName() + " has changed hostip to " + pieces[2]);
 					
 					client.setHost(pieces[3]);
-					System.out.println(client.getName() + "'s server IP is now " + pieces[2]);
 					
 					String realname = "";
 					for(int i = 4; i < pieces.length; i ++){
 						realname += pieces[i];
 					}
 					client.setRname(realname);
-					System.out.println("Client " + client.getName() + " set their real name to " + realname);
 					
 					client.ping();
 					client.sendMessage(":" + ip + " " + RPL_WELCOME + " " + client.getName() +  " :Welcome to Danilafe's IRC");
 					this.sendMOTD(client);
 				} else {
 					client.sendMessage(":" + ip + " " + ERR_NICKNAMEINUSE + " " + client.getName());
-					System.out.println("Client attempted to connect with taken username. Client username: " + pieces[1]);
 				}
 				
 				
@@ -141,13 +133,11 @@ public class Startup {
 						String s = "Client " + client.getName() + " changed name to ";
 						String oldname = client.getName();
 						client.setName(pieces[1]);
-						System.out.println(s + client.getName());
 						for(Channel c: getClientChannel(client)){
 							c.sendChannelMSG(":" + oldname + "!" + oldname + "@" + client.getIP() +" NICK " + client.getName());
 						}
 					} else {
-						client.sendMessage(":" + ip + " " + ERR_NICKNAMEINUSE + " " + client.getName()); //TODO Make this a proper nice message XD
-						System.out.println("Client attempted to connect with taken username. Client username: " + pieces[1]);
+						client.sendMessage(":" + ip + " " + ERR_NICKNAMEINUSE + " " + client.getName()); 
 					}
 
 				}
@@ -158,23 +148,17 @@ public class Startup {
 		case "PONG":
 			
 			if(client.checkPing(pieces[1])){
-				System.out.println("Ping has succeeded");
+		
 			} else {
-				System.out.println("Ping has failed.");
+			
 			}
 			
 			break;
 		//All further commands require client to be pinged. If not, send them a message.
-		case "JOIN": //TODO this might look nice, but I feel like this is slightly incomplete. Pls improve.
-			System.out.println("Client " + client.getName() + " Attempted to Join IRC channel.");
+		case "JOIN": 
 			if(pieces.length > 1){
-				System.out.println("   There are enough arguments.");
 				if(client.getPinged() == true){
 					if(pieces[1].split(",").length == 1){
-						System.out.println("   The client is pinged.");
-						while(modifyingclients == true){
-							System.out.println("Waiting for client modifications to finish...");
-						}
 						String cname = pieces[1].replace("#", "");
 						this.joinChannel(cname, client);
 						this.sendNamesToClient(client, pieces[1]);
@@ -199,9 +183,6 @@ public class Startup {
 			if(pieces.length > 2){
 				if(client.getPinged()){
 					if(pieces[1].startsWith("#")){
-						System.out.println("Received message to channel");
-						System.out.println("Full message is:");
-						System.out.println("    " + command);
 						if(this.checkForChannel(pieces[1].replace("#", ""))){
 							String message = pieces[2];
 							if(message.startsWith(":")){
@@ -210,9 +191,6 @@ public class Startup {
 							for(int i = 3; i < pieces.length; i ++){
 								message += " " + pieces[i];
 							}
-							System.out.println("Sending " + message + " to channel " + pieces[1].replace("#", ""));
-							System.out.println("Direct message sent to IRC :");
-							System.out.println("    " + ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " :" + message);
 							this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSGExclude(client,":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" PRIVMSG " + pieces[1] + " :" + message);
 							}
 					}
@@ -238,7 +216,6 @@ public class Startup {
 				for(Channel c: chan){
 					if(c.getName().equals(pieces[1].replace("#", ""))){
 						c.partUser(client);
-						System.out.println("Removed client " + c.getName() + " from channel " + c.getName() + " (case 1)");
 					}
 				}
 			} 
@@ -246,7 +223,6 @@ public class Startup {
 				Channel c = channels.get(0);
 				if(c.getName().equals(pieces[1].replace("#", ""))){
 					c.partUser(client);
-					System.out.println("Removed client " + c.getName() + " from channel " + c.getName() + " (case 2)");
 					clients.add(client);
 				}
 			}
@@ -302,7 +278,6 @@ public class Startup {
 		}
 		
 		
-		System.out.println("Created new channel");
 		Channel newc = new Channel(cname);
 		channels.add(newc);
 		return newc;
@@ -386,7 +361,6 @@ public class Startup {
 	 */
 	void sendChannelList(Client client){
 		String channelmode; //TODO get the actual channel mode.
-		System.out.println(client.getName() + " requested channel list.");
 		for(Channel c: channels){
 			client.sendMessage(":" + ip + " " + RPL_LIST + " " + client.getName() + " " + "#" + c.getName() + " " + c.getUserCount() + " " + "[+ntr]" + " " + c.getTopic()); //TODO Add function to sendchannelmode
 		}
@@ -409,10 +383,7 @@ public class Startup {
 		
 		c.close();
 		
-		System.out.println("Disconnected client " + c.getName());
-		
-		
-	}
+		}
 	
 	/**
 	 * Adds the client to the channel passed down.
@@ -432,8 +403,7 @@ public class Startup {
 				c.sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + "#" + cname);
 				c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
 				client.setMode("+i");
-				System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
-
+				
 			}
 			
 		} else {
@@ -448,7 +418,6 @@ public class Startup {
 				c.sendChannelMSG(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() +" JOIN " + "#" + cname);
 				c.sendChannelMSG(":" + client.getName() + " MODE " + client.getName() + " :" +"+i");
 				client.setMode("+i");
-				System.out.println("Added user " + client.getName() + " to channel " +"#" + c.getName());	
 				
 			}
 			
@@ -463,8 +432,6 @@ public class Startup {
 	void sendNamesToClient(Client client, String channel){
 		if(this.checkForChannel(channel.replace("#", ""))){
 
-			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnUsers());
-			System.out.println("Sending message " + ":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + "#" + channel + " :" + getChannelByName(channel.replace("#", "")).returnUsers());
 			client.sendMessage(":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + channel + " :" + getChannelByName(channel.replace("#", "")).returnUsers());
 			client.sendMessage(":" + ip + " " + RPL_ENDOFNAMES + " " + client.getName() + " :End of /NAMES command.");
 

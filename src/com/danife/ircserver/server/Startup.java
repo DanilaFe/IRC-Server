@@ -61,7 +61,6 @@ public class Startup {
 
 
     Startup() {
-        //TODO we need to get our actual ip, k?
         gui.addLogLine("Initializing DanilaFe's Server");
         try {
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -235,6 +234,7 @@ public class Startup {
                     if (c.getName().equals(pieces[1].replace("#", ""))) {
                         c.partUser(client);
                         gui.addLogLine("Disconnected client " + client.getName() + " from channel " + c.getName());
+                        c.sendChannelMSGExclude(client, ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() + " PART " + pieces[1]);
                     }
                 }
             }
@@ -244,7 +244,8 @@ public class Startup {
                     c.partUser(client);
                     clients.add(client);
                     gui.addLogLine("Disconnected client " + client.getName() + " from channel " + c.getName());
-
+                    c.sendChannelMSGExclude(client, ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() + " PART " + pieces[1]);
+                    
                 }
             }
 

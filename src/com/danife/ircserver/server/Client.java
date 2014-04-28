@@ -43,11 +43,11 @@ public class Client {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					System.out.println("[" + username + "]" + receive);
+					
 					parent.handleCommand(me, receive);
 				}	
 			} catch(IOException e){
-				System.out.println("Client " + username + " has detected an error in the communication, probably closed socket.");
+				parent.addLogLine("Client " + username + " has detected an error in the communication, probably closed socket.");
 				parent.handleDisconnection(me);
 			}
 			
@@ -73,7 +73,6 @@ public class Client {
 	 */
 	public void sendMessage(String m){
 		ps.println(m);
-		System.out.println("Sent "  + m);
 	}
 	
 	/**
@@ -181,7 +180,7 @@ public class Client {
 	public void ping(){
 		String ping = generatePing(5);
 		this.sendMessage("PING :" + ping);
-		System.out.println("Pinged " + username + " with " + ping);
+		parent.addLogLine("Pinged " + username + " with " + ping);
 		lasping = ping;
 	}
 	
@@ -225,7 +224,7 @@ public class Client {
 		try {
 			client.getOutputStream().write(0);
 		} catch (IOException e) {
-			System.out.println("Client " + username + " has detected an error in the communication, probably close socket.");
+			parent.addLogLine("Client " + username + " has detected an error in the communication, probably close socket.");
 		}
 		
 		parent.handleDisconnection(this);

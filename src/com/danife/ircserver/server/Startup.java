@@ -208,6 +208,10 @@ public class Startup {
                             this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSGExclude(client, ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() + " PRIVMSG " + pieces[1] + " :" + message);
                             gui.addLogLine("Client " + client.getName() + " to channel " + this.getChannelByName(pieces[1].replace("#", "")).getName() + ": " + message);
                         }
+                    } else {
+                    	for(int i = 0; i < clients.size(); i ++){
+                    		
+                    	}
                     }
                 }
             }
@@ -531,6 +535,10 @@ public class Startup {
 
     }
 
+    /**
+     * Gets the list of users on the channel.
+     * @return String[] containing user names.
+     */
     public String[] getChannelNames() {
 
             ArrayList < String > channelnames = new ArrayList < String > ();
@@ -543,5 +551,25 @@ public class Startup {
             return toreturn;
 
 
+    }
+    
+    public Client getClientByName(String name){
+        ArrayList < Client > tclients = new ArrayList < Client > ();
+        tclients.addAll(clients);
+        for (int i = 0; i < channels.size(); i++) {
+            ArrayList < Client > clients = channels.get(i).getUsers();
+            for (Client c: clients) {
+                if (!(tclients.contains(c))) {
+                    tclients.add(c);
+                }
+            }
+        }
+        for(Client c: tclients){
+        	if(c.getName().equals(name)){
+        		return c;
+        	}
+        }
+        
+        return null;
     }
 }

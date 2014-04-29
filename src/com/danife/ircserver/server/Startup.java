@@ -31,8 +31,8 @@ public class Startup {
     final int RPL_MOTD = 372;
     final int RPL_ENDOFMOTD = 376;
     final int RPL_MOTDSTART = 375;
-    //dickbutt
-
+    
+    
     String ip = "24.21.16.125";
     boolean modifyingclients = false;
     Startup me = this;

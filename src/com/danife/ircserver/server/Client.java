@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.Random;
 
 public class Client {
-	
+	//test
 	private String mode;
 	private String lasping;
 	private String ip;

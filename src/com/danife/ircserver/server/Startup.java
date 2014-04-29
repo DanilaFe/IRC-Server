@@ -100,6 +100,7 @@ public class Startup {
     void handleCommand(Client client, String command) {
         String[] pieces = command.split(" ");
         String argument1 = command.split(" ")[0];
+       gui.addLogLine("[DeBug] " + "Received command \"" + command + "\" " + " from client " + client.getName());
         switch (argument1.toUpperCase()) {
         case "USER":
             if (pieces.length >= 5) {
@@ -193,7 +194,7 @@ public class Startup {
                 }
             }
             break;
-        case "PRIVMSG":
+        case "PM": case "PRIVMSG":
             if (pieces.length > 2) {
                 if (client.getPinged()) {
                     if (pieces[1].startsWith("#")) {
@@ -209,8 +210,17 @@ public class Startup {
                             gui.addLogLine("Client " + client.getName() + " to channel " + this.getChannelByName(pieces[1].replace("#", "")).getName() + ": " + message);
                         }
                     } else {
-                    	for(int i = 0; i < clients.size(); i ++){
-                    		
+                    	Client c = this.getClientByName(pieces[1]);
+                    	if(c != null){
+                            String message = pieces[2];
+                            if (message.startsWith(":")) {
+                                message = message.substring(1);
+                            }
+                            for (int i = 3; i < pieces.length; i++) {
+                                message += " " + pieces[i];
+                            }
+                    		c.sendMessage(":" + client.getName() + "!" + client.getName() + "@" + client.getIP() + " PRIVMSG " + c.getName() + " :" + message);
+                    		gui.addLogLine("[DeBug] Client " + client.getName() + " to client " + c.getName() + " :" + message);
                     	}
                     }
                 }
@@ -227,8 +237,8 @@ public class Startup {
             break;
         case "NAMES":
             if (pieces.length > 1) {
+            	gui.addLogLine("Attemtping to send client " + client.getName() + " list of names on channel " + pieces[1]);
                 this.sendNamesToClient(client, pieces[1]);
-                gui.addLogLine("Sent client " + client.getName() + " list of names on channel " + pieces[1]);
             }
             break;
         case "PART":
@@ -465,7 +475,8 @@ public class Startup {
 
             client.sendMessage(":" + ip + " " + RPL_NAMREPLY + " " + client.getName() + " = " + channel + " :" + getChannelByName(channel.replace("#", "")).returnUsers());
             client.sendMessage(":" + ip + " " + RPL_ENDOFNAMES + " " + client.getName() + " :End of /NAMES command.");
-
+            gui.addLogLine("Sent to send client " + client.getName() + " list of names on channel " + channel.replace("#", ""));
+            
         }
     }
 
@@ -553,7 +564,12 @@ public class Startup {
 
     }
     
-    public Client getClientByName(String name){
+    /**
+     * Returns the client with the given name, or null of no client with that name exists.
+     * @param name
+     * @return
+     */
+     Client getClientByName(String name){
         ArrayList < Client > tclients = new ArrayList < Client > ();
         tclients.addAll(clients);
         for (int i = 0; i < channels.size(); i++) {

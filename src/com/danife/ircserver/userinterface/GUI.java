@@ -26,6 +26,7 @@ public class GUI implements ActionListener{
 	Container lists = new Container();
 	private JScrollPane userpane;
 	private JScrollPane channelpane;
+	private JScrollPane areapane;
 	private JList<String> users;
 	private JList<String> channels;
 	private JFrame frame = new JFrame("DanilaFe's IRC Server");
@@ -40,6 +41,7 @@ public class GUI implements ActionListener{
 					Thread.sleep(500);
 					users.setListData(s.getUserNames());
 					channels.setListData(s.getChannelNames());
+					frame.revalidate();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -55,13 +57,14 @@ public class GUI implements ActionListener{
 		channels = new JList<String>(s.getChannelNames());
 		userpane = new JScrollPane(users);
 		channelpane = new JScrollPane(channels);
+		areapane = new JScrollPane(area);
 		
 		lists.setLayout(new GridLayout(0,1));
 		lists.add(userpane);
 		lists.add(channelpane);
 		
 		data.setLayout(new BorderLayout());
-		data.add(area, BorderLayout.EAST);
+		data.add(areapane, BorderLayout.EAST);
 		data.add(lists, BorderLayout.CENTER);
 		
 		

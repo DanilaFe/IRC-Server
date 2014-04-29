@@ -61,7 +61,6 @@ public class Startup {
 
 
     Startup() {
-        //TODO we need to get our actual ip, k?
         gui.addLogLine("Initializing DanilaFe's Server");
         try {
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -209,6 +208,10 @@ public class Startup {
                             this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSGExclude(client, ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() + " PRIVMSG " + pieces[1] + " :" + message);
                             gui.addLogLine("Client " + client.getName() + " to channel " + this.getChannelByName(pieces[1].replace("#", "")).getName() + ": " + message);
                         }
+                    } else {
+                    	for(int i = 0; i < clients.size(); i ++){
+                    		
+                    	}
                     }
                 }
             }
@@ -235,6 +238,7 @@ public class Startup {
                     if (c.getName().equals(pieces[1].replace("#", ""))) {
                         c.partUser(client);
                         gui.addLogLine("Disconnected client " + client.getName() + " from channel " + c.getName());
+                        c.sendChannelMSGExclude(client, ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() + " PART " + pieces[1]);
                     }
                 }
             }
@@ -244,7 +248,8 @@ public class Startup {
                     c.partUser(client);
                     clients.add(client);
                     gui.addLogLine("Disconnected client " + client.getName() + " from channel " + c.getName());
-
+                    c.sendChannelMSGExclude(client, ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() + " PART " + pieces[1]);
+                    
                 }
             }
 
@@ -257,6 +262,7 @@ public class Startup {
         case "QUIT":
             handleDisconnection(client);
             gui.addLogLine("Client " + client.getName() + " was disconnected.");
+            
             break;
 
         }
@@ -398,6 +404,8 @@ public class Startup {
     void handleDisconnection(Client c) {
         for (Channel dis: getClientChannel(c)) {
             dis.partUser(c);
+            dis.sendChannelMSGExclude(c, ":" + c.getName() + "!" + c.getName() + "@" + c.getIP() + " QUIT " + ":Client disconnected.");
+            
         }
 
         if (clients.contains(c)) {
@@ -527,6 +535,10 @@ public class Startup {
 
     }
 
+    /**
+     * Gets the list of users on the channel.
+     * @return String[] containing user names.
+     */
     public String[] getChannelNames() {
 
             ArrayList < String > channelnames = new ArrayList < String > ();
@@ -539,5 +551,25 @@ public class Startup {
             return toreturn;
 
 
+    }
+    
+    public Client getClientByName(String name){
+        ArrayList < Client > tclients = new ArrayList < Client > ();
+        tclients.addAll(clients);
+        for (int i = 0; i < channels.size(); i++) {
+            ArrayList < Client > clients = channels.get(i).getUsers();
+            for (Client c: clients) {
+                if (!(tclients.contains(c))) {
+                    tclients.add(c);
+                }
+            }
+        }
+        for(Client c: tclients){
+        	if(c.getName().equals(name)){
+        		return c;
+        	}
+        }
+        
+        return null;
     }
 }

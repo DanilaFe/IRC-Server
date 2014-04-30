@@ -73,9 +73,13 @@ public class GUI implements ActionListener{
 			if(!folder.exists()){
 				folder.mkdir();
 			}
-			File testfile = new File("logs","log-"+Calendar.getInstance().getTime().toString() + ".txt");
-			testfile.createNewFile();
-			pwriter = new PrintWriter(testfile, "UTF-8");
+			
+			String[] simpletime = this.getSimpleTime();
+			String time = "";
+			for(String s: simpletime){
+				time += "_" + s;
+			}
+			pwriter = new PrintWriter("logs" + File.separator + "log" + time + ".txt", "UTF-8");
 
 		
 		} catch (Exception  e) {
@@ -139,5 +143,53 @@ public class GUI implements ActionListener{
 	 */
 	public void close(){
 		pwriter.close();
+	}
+	
+	public String[] getSimpleTime(){
+		int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+		int minute = Calendar.getInstance().get(Calendar.MINUTE);
+		int second = Calendar.getInstance().get(Calendar.SECOND);
+		int montht = Calendar.getInstance().get(Calendar.MONTH);
+		String month = null;
+		switch(montht){
+		case 1:
+			month = "January";
+			break;
+		case 2:
+			month = "February";
+			break;
+		case 3:
+			month = "March";
+			break;
+		case 4:
+			month = "April";
+			break;
+		case 5:
+			month = "May";
+			break;
+		case 6:
+			month = "June";
+			break;
+		case 7:
+			month = "July";
+			break;
+		case 8:
+			month = "August";
+			break;
+		case 9:
+			month = "September";
+			break;
+		case 10:
+			month = "October";
+			break;
+		case 11:
+			month = "November";
+			break;
+		case 12:
+			month = "December";
+			break;
+		}
+		int year = Calendar.getInstance().get(Calendar.YEAR);
+		return new String[] {Integer.toString(hour),Integer.toString(minute),Integer.toString(second),month, Integer.toString(year)};
 	}
 }

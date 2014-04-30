@@ -31,6 +31,8 @@ public class Startup {
     final int RPL_MOTD = 372;
     final int RPL_ENDOFMOTD = 376;
     final int RPL_MOTDSTART = 375;
+    final int RPL_WHOISUSER = 311;
+    final int ERR_NOSUCHNICK = 401;
     
     
     String ip = "24.21.16.125";
@@ -272,9 +274,17 @@ public class Startup {
         case "QUIT":
             handleDisconnection(client);
             gui.addLogLine("Client " + client.getName() + " was disconnected.");
-            
             break;
-
+        case "WHOIS":
+        	Client target = this.getClientByName(pieces[1]);
+        	if(target != null){
+        		gui.addLogLine("Sending client " + client.getName() + " the info for user " + target.getName());
+        		client.sendMessage(":" + ip +  " " + RPL_WHOISUSER + " " + client.getName() + " " + target.getName() + " " + target.getName() + " " + ip + " " + "*" + " :" + target.getRname());	
+        	} else {
+        		client.sendMessage(":" + ip + " " + ERR_NOSUCHNICK + " " + client.getName() + " :No such nick.");
+        		gui.addLogLine("Client requested WHOIS of unknown user");
+        	}
+        	
         }
     }
 

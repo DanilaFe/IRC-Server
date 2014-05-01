@@ -1,5 +1,7 @@
 package com.danife.ircserver.server;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,8 +10,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.BindException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +37,7 @@ public class Startup {
     final int RPL_MOTDSTART = 375;
     final int RPL_WHOISUSER = 311;
     final int ERR_NOSUCHNICK = 401;
-    
+    boolean enable_gui = true;
     
     String ip = "24.21.16.125";
     boolean modifyingclients = false;
@@ -41,7 +45,7 @@ public class Startup {
     ArrayList < Client > clients = new ArrayList < Client > ();
     ArrayList < Channel > channels = new ArrayList < Channel > ();
     ServerSocket s;
-    private GUI gui = new GUI(this);
+    private GUI gui;
     Thread acceptthread = new Thread() {
         public void run() {
             while (true) {
@@ -62,7 +66,9 @@ public class Startup {
     };
 
 
-    Startup() {
+    Startup(boolean guion) {
+    	enable_gui = guion;
+    	gui = new GUI(this,enable_gui);
         gui.addLogLine("Initializing DanilaFe's Server");
         try {
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -85,13 +91,22 @@ public class Startup {
             gui.addLogLine("Initialized Server Socket");
             acceptthread.start();
             gui.addLogLine("Activated listener. Server is now open to connections.");
+            gui.setIcon("greengem.png");
         } catch (IOException e) {
             gui.addLogLine("Problem binding to port. Is another program using it?");
         }
     }
 
     public static void main(String[] args) {
-        new Startup();
+    	if(args.length == 0 ){
+            new Startup(true);
+    	}
+    	else if(args.length == 1 && checkBoolean(args[0]) == true){
+    		new Startup(Boolean.parseBoolean(args[0]));
+    	} else {
+    		new Startup(true);
+    	}
+
     }
 
     /**
@@ -598,4 +613,22 @@ public class Startup {
         
         return null;
     }
+     
+     /**
+      * Returns wether the gui is enabled.
+      * @return
+      */
+     public boolean getGuiEnabled(){
+    	 return enable_gui;
+     }
+     
+     private static boolean checkBoolean(String bol){
+    	 try{
+    		 Boolean.parseBoolean(bol); 
+    		 return true;
+    	 } catch (Exception e){
+    		 return false;
+    	 }
+     }
+
 }

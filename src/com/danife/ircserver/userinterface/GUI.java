@@ -22,6 +22,7 @@ import javax.swing.JTextField;
 import com.danife.ircserver.server.Startup;
 
 public class GUI implements ActionListener{
+	private boolean guion = true;
 	Container data = new Container();
 	Container lists = new Container();
 	private JScrollPane userpane;
@@ -51,22 +52,37 @@ public class GUI implements ActionListener{
 	};
 	
 	
-	public GUI(Startup startup){
+	public GUI(Startup startup, boolean Guion){
+		guion = Guion;
 		s = startup;
-		users = new JList<String>(s.getUserNames());
-		channels = new JList<String>(s.getChannelNames());
-		userpane = new JScrollPane(users);
-		channelpane = new JScrollPane(channels);
-		areapane = new JScrollPane(area);
-		
-		lists.setLayout(new GridLayout(0,1));
-		lists.add(userpane);
-		lists.add(channelpane);
-		
-		data.setLayout(new BorderLayout());
-		data.add(areapane, BorderLayout.EAST);
-		data.add(lists, BorderLayout.CENTER);
-		
+			users = new JList<String>(s.getUserNames());
+			channels = new JList<String>(s.getChannelNames());
+			userpane = new JScrollPane(users);
+			channelpane = new JScrollPane(channels);
+			areapane = new JScrollPane(area);
+			
+			lists.setLayout(new GridLayout(0,1));
+			lists.add(userpane);
+			lists.add(channelpane);
+			
+			data.setLayout(new BorderLayout());
+			data.add(areapane, BorderLayout.EAST);
+			data.add(lists, BorderLayout.CENTER);
+			
+			
+			frame.setSize(500,500);
+			frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+			frame.setLayout(new BorderLayout());
+			
+			frame.add(data, BorderLayout.CENTER);
+			frame.add(field, BorderLayout.SOUTH);
+			
+			area.setEditable(false);
+			field.addActionListener(this);
+			
+			frame.setVisible(guion);
+			updatelists.start();
+			
 		
 		try {
 			File folder = new File("logs");
@@ -88,19 +104,6 @@ public class GUI implements ActionListener{
 			System.out.println(e.getCause());
 		}
 		
-		
-		frame.setSize(500,500);
-		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
-		frame.setLayout(new BorderLayout());
-		
-		frame.add(data, BorderLayout.CENTER);
-		frame.add(field, BorderLayout.SOUTH);
-		
-		area.setEditable(false);
-		field.addActionListener(this);
-		
-		frame.setVisible(true);
-		updatelists.start();
 	}
 	
 	@Override
@@ -134,7 +137,9 @@ public class GUI implements ActionListener{
 	 */
 	public void addLogLine(String line){
 		Calendar c = Calendar.getInstance();
-		area.append("[" + c.get(Calendar.HOUR) + ":" + c.get(Calendar.MINUTE) + ":" + c.get(Calendar.SECOND)+ "] " + line + "\n");
+		if(guion){
+			area.append("[" + c.get(Calendar.HOUR) + ":" + c.get(Calendar.MINUTE) + ":" + c.get(Calendar.SECOND)+ "] " + line + "\n");	
+		}
 		pwriter.println("[" + c.get(Calendar.HOUR) + ":" + c.get(Calendar.MINUTE) + ":" + c.get(Calendar.SECOND)+ "] " + line);
 	}
 
@@ -192,4 +197,12 @@ public class GUI implements ActionListener{
 		int year = Calendar.getInstance().get(Calendar.YEAR);
 		return new String[] {Integer.toString(hour),Integer.toString(minute),Integer.toString(second),month, Integer.toString(year)};
 	}
+	
+	public JFrame returnframe(){
+		return this.frame;
+	}
+	
+	public void setIcon(String iconname){
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("greengem.png")));
+		}
 }

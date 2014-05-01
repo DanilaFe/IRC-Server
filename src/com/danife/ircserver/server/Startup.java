@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.danife.ircserver.userinterface.GUI;
+import com.danilafe.ircserver.util.IP;
 
 public class Startup {
     //TODO we still need all the reply codes.
@@ -67,6 +68,8 @@ public class Startup {
 
 
     Startup(boolean guion) {
+    	IP ipp = new IP();
+    	this.ip = ipp.getIP();
     	enable_gui = guion;
     	gui = new GUI(this,enable_gui);
         gui.addLogLine("Initializing DanilaFe's Server");

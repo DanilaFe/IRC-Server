@@ -1,5 +1,6 @@
 package com.danife.ircserver.server;
 
+import java.awt.Desktop;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.danife.ircserver.userinterface.GUI;
+import com.danilafe.ircserver.util.Config;
 import com.danilafe.ircserver.util.IP;
 
 public class Startup {
@@ -47,6 +49,7 @@ public class Startup {
     ArrayList < Channel > channels = new ArrayList < Channel > ();
     ServerSocket s;
     private GUI gui;
+    private Config config;
     Thread acceptthread = new Thread() {
         public void run() {
             while (true) {
@@ -72,7 +75,15 @@ public class Startup {
     	this.ip = ipp.getIP();
     	enable_gui = guion;
     	gui = new GUI(this,enable_gui);
+    	config = new Config();
         gui.addLogLine("Initializing DanilaFe's Server");
+        System.out.println(config.getProperty("IRCPass"));
+        File filef = new File(config.getProperty("IRCFileFolder"));
+        if(filef.exists() && filef.isDirectory()){
+        	
+        } else {
+        	filef.mkdir();
+        }
         try {
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
@@ -303,11 +314,68 @@ public class Startup {
         		gui.addLogLine("Client requested WHOIS of unknown user");
         	}
         	
+        	break;
+        	
         }
+        
+        handleCustomCommand(command);
     }
 
-
     /**
+     * Here go the commands that are NOT normally used in the IRC. 
+     * @param command the command to be processed 
+     */
+    private void handleCustomCommand(String command) {
+		
+    	String []pieces = command.split(" ");
+    	gui.addLogLine("[DeBug] " + "Listening to custom command.");
+    	
+    	switch(command.split(" ")[0].toUpperCase()){  	
+    	case "FILE":
+    		gui.addLogLine("[DeBug] " + "Heard command " + command.split(" ")[0]);
+    		if(pieces.length == 3){
+    			gui.addLogLine("[DeBug]" + " Correct piece length.");
+    			if(checkPassword(pieces[1])){
+    				gui.addLogLine("[DeBug]" + " Password is correct.");
+    				openFile(pieces[2]);
+    			}
+    		}
+    		break;
+    		
+    	}
+		
+	}
+
+    public void openFile(String filename){
+    	 File f = new File(config.getProperty("IRCFileFolder") + File.separator + filename);
+    	if(f.exists()){
+    		gui.addLogLine("[DeBug]" + " File Exists.");
+    		try {
+				Desktop.getDesktop().open(f);
+				gui.addLogLine("[DeBug]" + " Tried opening file.");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    	}
+    }
+    
+    /**
+     * Makes sure the password sent is correct.
+     * @param string
+     */
+	private boolean checkPassword(String string) {
+		
+		if(string.equals(config.getProperty("IRCPass"))) {
+			return true;
+			
+		}
+		gui.addLogLine("Password send: " + string + " Password required " + config.getProperty("IRCPass"));
+		System.out.println(config.getProperty("IRCPass"));
+		return false;
+		
+	}
+
+	/**
      * Gets the server's motd.
      * @return the array of strings, the motd.
      */

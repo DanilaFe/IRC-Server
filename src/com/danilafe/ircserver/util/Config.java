@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 public class Config {
 	
@@ -14,15 +15,19 @@ public class Config {
 	File config;
 	
 	
-	public Config(){
-		config = new File("serverConfig.txt");
+	public Config(String configname, String type){
+		config = new File(configname + ".txt");
 		if(!config.exists()){ //If it does not exists, we create a new file and add defaults
 			try {
 				config.createNewFile();
 				r = new BufferedReader(new FileReader(config));
 				p = new PrintWriter(config);
-				p.println("IRCPass: " + "defaultpass");
-				p.println("IRCFileFolder: " + "files");
+				if(type.equals("Server")){
+					p.println("IRCPass: " + "defaultpass");
+					p.println("IRCFileFolder: " + "files");
+				} else if(type.equals("ServerBot")){
+					p.println("test_command: " + "Received test command.");
+				}
 				p.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -91,5 +96,27 @@ public class Config {
 		
 		return null;
 	}	
+	
+	public ArrayList<String> getProperties(){
+		ArrayList<String> commands = new ArrayList<String>();
+		try {
+			r = new BufferedReader(new FileReader(config));
+		} catch (IOException e) {
+			
+		}
+		
+		String temp;
+		try {
+			while((temp = r.readLine()) != null){
+				commands.add(temp.substring(temp.indexOf(": ")));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return commands;
+		
+		
+	}
 
 }

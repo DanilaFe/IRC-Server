@@ -16,6 +16,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -361,13 +362,27 @@ public class Startup {
     public void openFile(String filename){
     	 File f = new File(config.getProperty("IRCFileFolder") + File.separator + filename);
     	if(f.exists()){
-    		gui.addLogLine("[DeBug]" + " File Exists.");
-    		try {
-				Desktop.getDesktop().open(f);
-				gui.addLogLine("[DeBug]" + " Tried opening file.");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+    		String extension = f.getName().substring(f.getName().lastIndexOf(".") + 1);
+    		if(!extension.equals("scpt")){
+    			System.out.println(extension);
+    			gui.addLogLine("[DeBug]" + " File Exists.");
+    			try {
+    				Desktop.getDesktop().open(f);
+    				gui.addLogLine("[DeBug]" + " Tried opening file.");
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    			}
+    		} else {
+    			try {
+    				System.out.println(f.getAbsolutePath().replace(" ", "\\ "));
+					Runtime.getRuntime().exec("osascript " + f.getAbsolutePath().replace(" ", "\\ "));//ehkdr cdeztksozrr
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    		
     	}
     }
     

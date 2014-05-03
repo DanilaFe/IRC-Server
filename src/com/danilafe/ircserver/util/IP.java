@@ -14,8 +14,7 @@ public class IP {
 			URL ipget = new URL("http://icanhazip.com");
 			BufferedReader in = new BufferedReader(new InputStreamReader(ipget.openStream()));
 			myip = in.readLine();
-			System.out.println(myip);
-		} catch (IOException e) {
+			} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

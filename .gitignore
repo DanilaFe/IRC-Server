@@ -1,6 +1,7 @@
 /bin/
 /logs/
 /logsold/
+/files/
 *.project
 *.DS_Store
 *.classpath

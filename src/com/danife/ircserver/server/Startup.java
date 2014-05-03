@@ -24,7 +24,10 @@ import com.danilafe.ircserver.util.Config;
 import com.danilafe.ircserver.util.IP;
 
 public class Startup {
-    //TODO we still need all the reply codes.
+	char[] chars = new char[]{
+			'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'	
+		};
+	//TODO we still need all the reply codes.
     final String RPL_WELCOME = "001";
     final String RPL_YOURHOST = "002";
     final String RPL_CREATED = "003";
@@ -50,6 +53,7 @@ public class Startup {
     ServerSocket s;
     private GUI gui;
     private Config config;
+    File filef;
     Thread acceptthread = new Thread() {
         public void run() {
             while (true) {
@@ -76,9 +80,8 @@ public class Startup {
     	enable_gui = guion;
     	gui = new GUI(this,enable_gui);
     	config = new Config();
-        gui.addLogLine("Initializing DanilaFe's Server");
-        System.out.println(config.getProperty("IRCPass"));
-        File filef = new File(config.getProperty("IRCFileFolder"));
+    	filef =  new File(config.getProperty("IRCFileFolder"));
+    	gui.addLogLine("Initializing DanilaFe's Server");
         if(filef.exists() && filef.isDirectory()){
         	
         } else {
@@ -318,29 +321,38 @@ public class Startup {
         	
         }
         
-        handleCustomCommand(command);
+        handleCustomCommand(client,command);
     }
 
     /**
      * Here go the commands that are NOT normally used in the IRC. 
      * @param command the command to be processed 
      */
-    private void handleCustomCommand(String command) {
+    private void handleCustomCommand(Client client, String command) {
 		
     	String []pieces = command.split(" ");
-    	gui.addLogLine("[DeBug] " + "Listening to custom command.");
     	
     	switch(command.split(" ")[0].toUpperCase()){  	
     	case "FILE":
-    		gui.addLogLine("[DeBug] " + "Heard command " + command.split(" ")[0]);
     		if(pieces.length == 3){
-    			gui.addLogLine("[DeBug]" + " Correct piece length.");
     			if(checkPassword(pieces[1])){
-    				gui.addLogLine("[DeBug]" + " Password is correct.");
     				openFile(pieces[2]);
     			}
     		}
     		break;
+    	case "CIPHER":
+    		String[] piecestwo = command.split(" "); //ehkdr
+    		if(pieces.length > 3){
+    		switch(undoCipher(piecestwo[1], piecestwo[2]).toUpperCase()){
+    			case "FILES":
+    				if(checkPassword(undoCipher(piecestwo[1], piecestwo[3]))){
+    				
+    				}
+    				break;
+    			}
+    			break;
+    		}
+
     		
     	}
 		
@@ -370,7 +382,6 @@ public class Startup {
 			
 		}
 		gui.addLogLine("Password send: " + string + " Password required " + config.getProperty("IRCPass"));
-		System.out.println(config.getProperty("IRCPass"));
 		return false;
 		
 	}
@@ -693,6 +704,11 @@ public class Startup {
     	 return enable_gui;
      }
      
+     /**
+      * Checks wether the string is a boolean
+      * @param bol the string to check
+      * @return wether the string can be converted to a boolean
+      */
      private static boolean checkBoolean(String bol){
     	 try{
     		 Boolean.parseBoolean(bol); 
@@ -701,5 +717,73 @@ public class Startup {
     		 return false;
     	 }
      }
+     
+     /**
+      * Encipher the text with the cipher of choice.
+      * @param cipher the type of cipher
+      * @param text the text to encrypt
+      * @return the encrypted string
+      */
+     public String doCipher(String cipher, String text){
+ 		String converted = text.toLowerCase();
+ 		char[] temp = converted.toCharArray();
+ 		if(cipher.equals("caesar")){
+ 			for(int j = 0; j < temp.length; j ++  ){
+ 				char c = temp[j];
+ 				for(int i = 0; i < chars.length; i ++){
+ 					if(chars[i] == c){
+ 						char replace = 'a';
+ 						if(i > 0){
+ 							 replace = chars[i-1];
+ 						} else if(i == 0){
+ 							 replace = chars[chars.length - 1];
+ 						} 
+ 						
+ 						StringBuilder sb = new StringBuilder(converted);
+ 						sb.setCharAt(j,replace);
+ 						converted = sb.toString();
+ 					}
+ 				}
+ 			}
+ 			return converted;
+ 		}
+ 		return null;
+ 	}
+    
+    /**
+     * Undoes the cipher of the selected type
+     * @param cipher the type of cipher to undo.
+     * @param text the ciphered text
+     * @return the unecnrypted text
+     */
+    public String undoCipher(String cipher, String text){
+  		String converted = text.toLowerCase();
+  		char[] temp = converted.toCharArray();
+  		if(cipher.equals("caesar")){
+  			for(int j = 0; j < temp.length; j ++  ){
+  				char c = temp[j];
+  				for(int i = 0; i < chars.length; i ++){
+  					if(chars[i] == c){
+  						char replace = 'a';
+  						if(i < chars.length - 1){
+  							 replace = chars[i + 1];
+  						} else if(i == chars.length - 1){
+  							 replace = chars[0];
+  						} 
+  						
+  						StringBuilder sb = new StringBuilder(converted);
+  						sb.setCharAt(j,replace);
+  						converted = sb.toString();
+  					}
+  				}
+  			}
+  			return converted;
+  		}
+  		return null;
+  	}
+    
+    public void sendFileList(){
+    	System.out.println("Hello");
+    }
 
 }

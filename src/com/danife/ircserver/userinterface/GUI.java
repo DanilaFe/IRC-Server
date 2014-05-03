@@ -22,6 +22,7 @@ import javax.swing.JTextField;
 import com.danife.ircserver.server.Startup;
 
 public class GUI implements ActionListener{
+	
 	private boolean guion = true;
 	Container data = new Container();
 	Container lists = new Container();
@@ -204,5 +205,7 @@ public class GUI implements ActionListener{
 	
 	public void setIcon(String iconname){
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("greengem.png")));
-		}
+	}
+	
+	
 }

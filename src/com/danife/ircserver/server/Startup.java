@@ -341,18 +341,6 @@ public class Startup {
     			}
     		}
     		break;
-    	case "CIPHER":
-    		String[] piecestwo = command.split(" "); //ehkdr
-    		if(pieces.length > 3){
-    		switch(undoCipher(piecestwo[1], piecestwo[2]).toUpperCase()){
-    			case "FILES":
-    				if(checkPassword(undoCipher(piecestwo[1], piecestwo[3]))){
-    					
-    				}
-    				break;
-    			}
-    			break;
-    		}
 
     		
     	}
@@ -733,72 +721,6 @@ public class Startup {
     	 }
      }
      
-     /**
-      * Encipher the text with the cipher of choice.
-      * @param cipher the type of cipher
-      * @param text the text to encrypt
-      * @return the encrypted string
-      */
-     public String doCipher(String cipher, String text){
- 		String converted = text.toLowerCase();
- 		char[] temp = converted.toCharArray();
- 		if(cipher.equals("caesar")){
- 			for(int j = 0; j < temp.length; j ++  ){
- 				char c = temp[j];
- 				for(int i = 0; i < chars.length; i ++){
- 					if(chars[i] == c){
- 						char replace = 'a';
- 						if(i > 0){
- 							 replace = chars[i-1];
- 						} else if(i == 0){
- 							 replace = chars[chars.length - 1];
- 						} 
- 						
- 						StringBuilder sb = new StringBuilder(converted);
- 						sb.setCharAt(j,replace);
- 						converted = sb.toString();
- 					}
- 				}
- 			}
- 			return converted;
- 		}
- 		return null;
- 	}
-    
-    /**
-     * Undoes the cipher of the selected type
-     * @param cipher the type of cipher to undo.
-     * @param text the ciphered text
-     * @return the unecnrypted text
-     */
-    public String undoCipher(String cipher, String text){
-  		String converted = text.toLowerCase();
-  		char[] temp = converted.toCharArray();
-  		if(cipher.equals("caesar")){
-  			for(int j = 0; j < temp.length; j ++  ){
-  				char c = temp[j];
-  				for(int i = 0; i < chars.length; i ++){
-  					if(chars[i] == c){
-  						char replace = 'a';
-  						if(i < chars.length - 1){
-  							 replace = chars[i + 1];
-  						} else if(i == chars.length - 1){
-  							 replace = chars[0];
-  						} 
-  						
-  						StringBuilder sb = new StringBuilder(converted);
-  						sb.setCharAt(j,replace);
-  						converted = sb.toString();
-  					}
-  				}
-  			}
-  			return converted;
-  		}
-  		return null;
-  	}
-    
-    public void sendFileList(){
-    	System.out.println("Hello");
-    }
+     
 
 }

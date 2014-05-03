@@ -346,7 +346,7 @@ public class Startup {
     		switch(undoCipher(piecestwo[1], piecestwo[2]).toUpperCase()){
     			case "FILES":
     				if(checkPassword(undoCipher(piecestwo[1], piecestwo[3]))){
-    				
+    					
     				}
     				break;
     			}

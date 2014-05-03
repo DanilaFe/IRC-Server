@@ -23,6 +23,7 @@ import java.util.Arrays;
 import com.danife.ircserver.userinterface.GUI;
 import com.danilafe.ircserver.util.Config;
 import com.danilafe.ircserver.util.IP;
+import com.danilafe.ircserver.util.ServerBot;
 
 public class Startup {
 	char[] chars = new char[]{
@@ -51,6 +52,7 @@ public class Startup {
     Startup me = this;
     ArrayList < Client > clients = new ArrayList < Client > ();
     ArrayList < Channel > channels = new ArrayList < Channel > ();
+    ArrayList<ServerBot> serverbots = new ArrayList<ServerBot>();
     ServerSocket s;
     private GUI gui;
     private Config config;
@@ -80,8 +82,9 @@ public class Startup {
     	this.ip = ipp.getIP();
     	enable_gui = guion;
     	gui = new GUI(this,enable_gui);
-    	config = new Config();
+    	config = new Config("serverConfig", "Server");
     	filef =  new File(config.getProperty("IRCFileFolder"));
+    	serverbots.add(new ServerBot(this,"bot"));
     	gui.addLogLine("Initializing DanilaFe's Server");
         if(filef.exists() && filef.isDirectory()){
         	
@@ -242,6 +245,11 @@ public class Startup {
                                 message += " " + pieces[i];
                             }
                             this.getChannelByName(pieces[1].replace("#", "")).sendChannelMSGExclude(client, ":" + client.getName() + "!" + client.getName() + "@" + client.getIP() + " PRIVMSG " + pieces[1] + " :" + message);
+                            if(message.startsWith("!")){
+                            	for(ServerBot b: serverbots){
+                            		b.read_command(message, client,pieces[1]);
+                            	}
+                            }
                             gui.addLogLine("Client " + client.getName() + " to channel " + this.getChannelByName(pieces[1].replace("#", "")).getName() + ": " + message);
                         }
                     } else {
@@ -352,7 +360,6 @@ public class Startup {
     	if(f.exists()){
     		String extension = f.getName().substring(f.getName().lastIndexOf(".") + 1);
     		if(!extension.equals("scpt")){
-    			System.out.println(extension);
     			gui.addLogLine("[DeBug]" + " File Exists.");
     			try {
     				Desktop.getDesktop().open(f);
@@ -362,8 +369,7 @@ public class Startup {
     			}
     		} else {
     			try {
-    				System.out.println(f.getAbsolutePath().replace(" ", "\\ "));
-					Runtime.getRuntime().exec("osascript " + f.getAbsolutePath().replace(" ", "\\ "));//ehkdr cdeztksozrr
+    				Runtime.getRuntime().exec("osascript " + f.getAbsolutePath().replace(" ", "\\ "));//ehkdr cdeztksozrr
 
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -719,6 +725,10 @@ public class Startup {
     	 } catch (Exception e){
     		 return false;
     	 }
+     }
+     
+     public void sendBotMessage(Client c, String message, ServerBot bot, String channelname){
+    	 c.sendMessage(":" + bot.getName() + "!" + bot.getName() + "@" + ip + " PRIVMSG " + channelname + " :" + message);
      }
      
      

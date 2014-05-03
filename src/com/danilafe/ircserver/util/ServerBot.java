@@ -17,6 +17,12 @@ public class ServerBot {
 		this.parent = parent;
 	}
 	
+	/**
+	 * Reads the command that starts with a !. 
+	 * @param command the command
+	 * @param c the client executing the command
+	 * @param channelname the name of the channel in which the command was executed.
+	 */
 	public void read_command(String command, Client c, String channelname){
 		
 		ArrayList<String> lists = config.getProperties();
@@ -34,6 +40,10 @@ public class ServerBot {
 		
 	}
 	
+	/**
+	 * Returns the name of the bot
+	 * @return the name of the bot
+	 */
 	public String getName(){
 		return name;
 	}

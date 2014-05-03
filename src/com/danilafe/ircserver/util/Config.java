@@ -97,6 +97,10 @@ public class Config {
 		return null;
 	}	
 	
+	/**
+	 * Returns <i> all properties </i> in this configuration. Generally used by bots to read possible commands.
+	 * @return
+	 */
 	public ArrayList<String> getProperties(){
 		ArrayList<String> commands = new ArrayList<String>();
 		try {

@@ -151,6 +151,10 @@ public class GUI implements ActionListener{
 		pwriter.close();
 	}
 	
+	/**
+	 * Gets the simple time for logs
+	 * @return
+	 */
 	public String[] getSimpleTime(){
 		int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 		int minute = Calendar.getInstance().get(Calendar.MINUTE);
@@ -199,10 +203,18 @@ public class GUI implements ActionListener{
 		return new String[] {Integer.toString(hour),Integer.toString(minute),Integer.toString(second),month, Integer.toString(year)};
 	}
 	
+	/**
+	 * Return the jframe of the GUI
+	 * @return
+	 */
 	public JFrame returnframe(){
 		return this.frame;
 	}
 	
+	/**
+	 * Sets the GUI icon.
+	 * @param iconname
+	 */
 	public void setIcon(String iconname){
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("greengem.png")));
 	}

@@ -727,6 +727,13 @@ public class Startup {
     	 }
      }
      
+     /**
+      * Sends the message from the bot to the user.
+      * @param c the client to send the message to.
+      * @param message the message to send
+      * @param bot the bot that is sending the message
+      * @param channelname the name of the channel.
+      */
      public void sendBotMessage(Client c, String message, ServerBot bot, String channelname){
     	 c.sendMessage(":" + bot.getName() + "!" + bot.getName() + "@" + ip + " PRIVMSG " + channelname + " :" + message);
      }

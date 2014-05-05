@@ -1,4 +1,4 @@
-package com.danife.ircserver.server;
+package com.danilafe.ircserver.server;
 
 import java.awt.Desktop;
 import java.awt.Image;
@@ -20,7 +20,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.danife.ircserver.userinterface.GUI;
+import com.danilafe.ircserver.userinterface.GUI;
 import com.danilafe.ircserver.util.Config;
 import com.danilafe.ircserver.util.IP;
 import com.danilafe.ircserver.util.ServerBot;

@@ -1,4 +1,4 @@
-package com.danife.ircserver.userinterface;
+package com.danilafe.ircserver.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -19,7 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import com.danife.ircserver.server.Startup;
+import com.danilafe.ircserver.server.Startup;
 
 public class GUI implements ActionListener{
 	

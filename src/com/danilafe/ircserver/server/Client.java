@@ -1,4 +1,4 @@
-package com.danife.ircserver.server;
+package com.danilafe.ircserver.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;

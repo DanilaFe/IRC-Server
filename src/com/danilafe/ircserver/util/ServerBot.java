@@ -2,8 +2,8 @@ package com.danilafe.ircserver.util;
 
 import java.util.ArrayList;
 
-import com.danife.ircserver.server.Client;
-import com.danife.ircserver.server.Startup;
+import com.danilafe.ircserver.server.Client;
+import com.danilafe.ircserver.server.Startup;
 
 public class ServerBot {
 	

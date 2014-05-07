@@ -1,0 +1,2 @@
+test_command: Received test command.
+hi: Hello!

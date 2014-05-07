@@ -1,0 +1,2 @@
+IRCPass: defaultpass
+IRCFileFolder: files

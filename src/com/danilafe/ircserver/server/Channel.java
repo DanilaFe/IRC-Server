@@ -53,7 +53,7 @@ public class Channel {
 	}
 	
 	/**
-	 * Adds a user to this channel. Please do this after removing said user from the main lobby.
+	 * Adds a user to this channel. Please do this after removing said user from the general lobby.
 	 * @param c the player to be added.
 	 */
 	public void addUser(Client c){

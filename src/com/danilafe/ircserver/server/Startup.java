@@ -499,7 +499,7 @@ public class Startup {
      * @param client the client to get connection
      * @return the array list containing all the channles this client has.
      */
-    ArrayList < Channel > getClientChannel(Client client) {
+    ArrayList<Channel> getClientChannel(Client client) {
         ArrayList < Channel > chan = new ArrayList < Channel > ();
         for (Channel c: channels) {
             if (c.checkUser(client)) {

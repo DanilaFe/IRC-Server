@@ -27,7 +27,7 @@ public class Config {
 					p.println("IRCFileFolder: " + "files");
 				} else if(type.equals("ServerBot")){
 					p.println("test_command: " + "Received test command.");
-				}
+				} 
 				p.close();
 			} catch (IOException e) {
 				e.printStackTrace();

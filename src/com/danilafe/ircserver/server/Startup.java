@@ -337,7 +337,7 @@ public class Startup {
      * Here go the commands that are NOT normally used in the IRC. 
      * @param command the command to be processed 
      */
-    private void handleCustomCommand(Client client, String command) {
+    public void handleCustomCommand(Client client, String command) {
 		
     	String []pieces = command.split(" ");
     	
@@ -736,6 +736,21 @@ public class Startup {
       */
      public void sendBotMessage(Client c, String message, ServerBot bot, String channelname){
     	 c.sendMessage(":" + bot.getName() + "!" + bot.getName() + "@" + ip + " PRIVMSG " + channelname + " :" + message);
+     }
+     
+     public void close(){
+    	 try {
+             acceptthread.stop();
+             if (s != null) {
+                 s.close();
+                 for (Client c: clients) {
+                     c.close();
+                 }
+             }
+             gui.close();
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
      }
      
      

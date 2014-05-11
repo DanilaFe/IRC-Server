@@ -401,7 +401,11 @@ public class Startup {
      */
     String[] getMOTD() {
         try {
-            BufferedReader r = new BufferedReader(new FileReader("MOTD.txt"));
+        	File file = new File("MOTD.txt");
+        	if(!file.exists()){
+        		file.createNewFile();
+        	}
+            BufferedReader r = new BufferedReader(new FileReader(file));
             ArrayList < String > temparray = new ArrayList < String > ();
             String s = null;
             while ((s = r.readLine()) != null) {

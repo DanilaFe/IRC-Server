@@ -176,7 +176,6 @@ public class Startup {
             if (pieces.length > 1) {
                 if (!(pieces[1].equalsIgnoreCase(client.getName()))) {
                     if (this.checkForSimilarName(pieces[1])) {
-                        String s = "Client " + client.getName() + " changed name to ";
                         String oldname = client.getName();
                         client.setName(pieces[1]);
                         for (Channel c: getClientChannel(client)) {
